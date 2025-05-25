@@ -5,7 +5,7 @@ namespace Systems.Stats
 	{
 		public delegate void Delegate(ref StatQuery<T> query);
 
-		public T BaseValue { get; }
+		public T BaseValue { get; set; }
 		public T Value { get; set; }
 
 		public StatQuery(T baseValue)
