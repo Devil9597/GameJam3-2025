@@ -34,7 +34,7 @@ public class PlayerMotionManger : MonoBehaviour
 		{
 			for (int i = 0; i < _controllers.Length; i++)
 			{
-				if (_controllers[i].enabled)
+				if (_controllers[i] != null && _controllers[i].enabled)
 				{
 					action(_controllers[i]);
 				}
