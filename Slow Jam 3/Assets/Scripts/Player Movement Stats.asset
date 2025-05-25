@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a23fdd878f29f52499b12e33d1115146, type: 3}
-  m_Name: New Player Movement Stats
+  m_Name: Player Movement Stats
   m_EditorClassIdentifier: 
   MaxWalkSpeed: 12.5
   GroundAcceleration: 5
@@ -37,7 +37,7 @@ MonoBehaviour:
   JumpCoyoteTime: 0.1
   DebugShowIsGroundedBox: 0
   DebugShowHeadBumpBox: 0
-  SHowWalkJumpArc: 0
+  ShowWalkJumpArc: 1
   ShowRunJumpArc: 0
   StopOnCollision: 1
   DrawRight: 1

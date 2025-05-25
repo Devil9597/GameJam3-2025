@@ -49,7 +49,7 @@ public class PlayerMovementStats : ScriptableObject
     public bool DebugShowHeadBumpBox;
 
     //--Jump Visualization Tool
-    public bool SHowWalkJumpArc = false;
+    public bool ShowWalkJumpArc = false;
     public bool ShowRunJumpArc = false;
     public bool StopOnCollision = true;
     public bool DrawRight = true;
