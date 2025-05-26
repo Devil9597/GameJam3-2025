@@ -4,10 +4,10 @@ using UnityEngine;
 namespace Systems.Stats
 {
 	/// <summary>
-	/// Adds a flat amount to a <see cref="float"/> or <see cref="int"/> value.
+	/// Subtracts a flat amount from a <see cref="float"/> or <see cref="int"/> value.
 	/// </summary>
 	[Serializable]
-	public sealed class StatIncrease : IStatModifier<float>, IStatModifier<int>
+	public sealed class StatDecrease : IStatModifier<float>, IStatModifier<int>
 	{
 		[SerializeField] private bool _enabled;
 		[SerializeField] private float _amount;
@@ -42,7 +42,7 @@ namespace Systems.Stats
 
 		public event Action OnValueChange;
 
-		public StatIncrease(int amount, bool enabled = true)
+		public StatDecrease(int amount, bool enabled = true)
 		{
 			Amount = amount;
 			Enabled = enabled;
@@ -51,13 +51,13 @@ namespace Systems.Stats
 		public void Handle(ref StatQuery<int> query)
 		{
 			if (!Enabled) return;
-			query.Value += (int)Amount;
+			query.Value -= (int)Amount;
 		}
 
 		public void Handle(ref StatQuery<float> query)
 		{
 			if (!Enabled) return;
-			query.Value += (float)Amount;
+			query.Value -= (float)Amount;
 		}
 
 		public void OnAdd() { }

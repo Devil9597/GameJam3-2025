@@ -1,27 +1,29 @@
 using System;
 using Systems.Stats;
 using UnityEngine;
+using Utilities.Timers;
 
 [CreateAssetMenu(fileName = "PlayerMoveStats", menuName = "Scriptable Objects/PlayerMoveStats")]
 public class PlayerMoveStats : ScriptableObject
 {
 	[Header("Horizontal Movement")]
-	[SerializeField] private StatFloat _maxSpeed = 2.0f;
-	[SerializeField] private float _groundedAcceleration = 2.0f;
-	[SerializeField] private float _groundedDrag = 8.0f;
-	[SerializeField] private float _aerialAcceleration = 1.0f;
-	[SerializeField] private float _aerialDrag = 1.0f;
+	[SerializeField] private float _maxSpeed = 2.0f;
+	[SerializeField] private float _aerialMaxSpeed = 3.0f;
 	[SerializeField] private float _runSpeedMult = 2.0f;
+	[SerializeField] private float _acceleration = 2.0f;
+	[SerializeField] private float _aerialAcceleration = 1.0f;
+	[SerializeField] private float _drag = 8.0f;
+	[SerializeField] private float _aerialDrag = 1.0f;
 
 	[Header("Jumping")]
-	[SerializeField] private StatFloat _jumpHeight = 5.0f;
+	[SerializeField] private float _jumpHeight = 5.0f;
 	[SerializeField] private float _aerialJumpHeight = 5.0f;
-	[SerializeField] private StatFloat _jumpSpeed = 0.5f;
-	[SerializeField] private StatInt _midairJumps = 0;
+	[SerializeField] private float _jumpSpeed = 0.5f;
+	[SerializeField] private int _midairJumps = 0;
 	[SerializeField] private float _jumpBufferTime = 0.25f;
 
 	[Header("Gravity")]
-	[SerializeField] private StatFloat _maxFallSpeed = 7.5f;
+	[SerializeField] private float _maxFallSpeed = 7.5f;
 	[SerializeField] private float _fallingGravityMult = 2.0f;
 	[SerializeField] private float _fastFallMult = 2.5f;
 
@@ -46,6 +48,7 @@ public class PlayerMoveStats : ScriptableObject
 	// Stat values
 	public StatFloat MaxSpeed { get; private set; }
 	public StatFloat Acceleration { get; private set; }
+	public StatFloat Drag { get; private set; }
 
 	public StatFloat JumpHeight { get; private set; }
 	public StatFloat JumpSpeed { get; private set; }
@@ -56,9 +59,68 @@ public class PlayerMoveStats : ScriptableObject
 	public StatFloat MaxFallSpeed { get; private set; }
 
 	// Modifiers
-	//public StatMultiplier GroundedAcceleration { get; private set; }
-	//public StatMultiplier 
+	public StatOverride<float> AerialMaxSpeed { get; private set; }
+	public StatMultiplier RunSpeed { get; private set; }
+	public StatOverride<float> AerialAcceleration { get; private set; }
+	public StatOverride<float> AerialDrag { get; private set; }
+
+	public StatOverride<float> AerialJumpHeight { get; private set; }
+	public StatDecrease MidairJumpsUsed { get; private set; }
+
+	public StatMultiplier FallingGravity { get; private set; }
+
+	public StatMultiplier FastFallSpeed { get; private set; }
+
+	// Other Values
+	public LayerMask GroundLayer { get => _groundLayer; set => _groundLayer = value; }
+	public Rect GroundDetectionArea { get => _detectionArea; set => _detectionArea = value; }
+
+	public CountdownTimer JumpBuffer { get; private set; }
+	public CountdownTimer CoyoteTimer { get; private set; }
 	#endregion
+
+	public void OnEnable()
+	{
+		ResetModifiers();
+		CalculateValues();
+	}
+
+	private void CalculateValues()
+	{
+		float t = JumpHeight.ModifiedValue / JumpSpeed.ModifiedValue;
+		Gravity.BaseValue = -(2f * JumpHeight.ModifiedValue) / t;
+	}
+
+	private void ResetModifiers()
+	{
+		// Remove all modifiers from all stats
+		MaxSpeed.ClearModifiers();
+		Acceleration.ClearModifiers();
+		Drag.ClearModifiers();
+
+		JumpHeight.ClearModifiers();
+		JumpSpeed.ClearModifiers();
+		MidairJumps.ClearModifiers();
+
+		Gravity.ClearModifiers();
+		MaxFallSpeed.ClearModifiers();
+
+		// Remove additional callbacks
+		AerialJumpHeight.OnValueChange -= CalculateValues;
+
+		// Re-add persistent modifiers and callbacks
+		MaxSpeed.AddModifiers(AerialMaxSpeed, RunSpeed);
+		Acceleration.AddModifier(AerialAcceleration);
+		Drag.AddModifier(AerialDrag);
+
+		AerialJumpHeight.OnValueChange += CalculateValues;
+		JumpHeight.AddModifier(AerialJumpHeight);
+		//JumpSpeed
+		//MidairJumps
+
+		Gravity.AddModifier(FallingGravity);
+		MaxFallSpeed.AddModifier(FastFallSpeed);
+	}
 }
 
 [Serializable]

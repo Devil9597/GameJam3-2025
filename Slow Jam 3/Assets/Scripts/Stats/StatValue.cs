@@ -112,6 +112,14 @@ namespace Systems.Stats
 			}
 		}
 
+		public virtual void AddModifiers(params IStatModifier<T>[] modifiers)
+		{
+			foreach (var modifier in modifiers)
+			{
+				AddModifier(modifier);
+			}
+		}
+
 		public virtual void RemoveModifier(IStatModifier<T> modifier)
 		{
 			if (_modifiers.Contains(modifier))
@@ -121,6 +129,14 @@ namespace Systems.Stats
 				_query -= modifier.Handle;
 				modifier.OnValueChange -= SetDirty;
 				modifier.OnRemove();
+			}
+		}
+
+		public virtual void RemoveModifiers(params IStatModifier<T>[] modifiers)
+		{
+			foreach (var modifier in modifiers)
+			{
+				RemoveModifier(modifier);
 			}
 		}
 
