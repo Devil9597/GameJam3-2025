@@ -7,25 +7,25 @@ using Utilities.Timers;
 public class PlayerMoveStats : ScriptableObject
 {
 	[Header("Horizontal Movement")]
-	[SerializeField] private float _maxSpeed = 2.0f;
-	[SerializeField] private float _aerialMaxSpeed = 3.0f;
-	[SerializeField] private float _runSpeedMult = 2.0f;
-	[SerializeField] private float _acceleration = 2.0f;
-	[SerializeField] private float _aerialAcceleration = 1.0f;
-	[SerializeField] private float _drag = 8.0f;
-	[SerializeField] private float _aerialDrag = 1.0f;
+	[SerializeField] private StatFloat _maxSpeed = 2.0f;
+	[SerializeField] private StatOverride<float> _aerialMaxSpeed = new(3.0f);
+	[SerializeField] private StatMultiplier _runSpeedMult = new(2.0f);
+	[SerializeField] private StatFloat _acceleration = 2.0f;
+	[SerializeField] private StatOverride<float> _aerialAcceleration = new(1.0f);
+	[SerializeField] private StatFloat _drag = 8.0f;
+	[SerializeField] private StatOverride<float> _aerialDrag = new(1.0f);
 
 	[Header("Jumping")]
-	[SerializeField] private float _jumpHeight = 5.0f;
-	[SerializeField] private float _aerialJumpHeight = 5.0f;
-	[SerializeField] private float _jumpSpeed = 0.5f;
-	[SerializeField] private int _midairJumps = 0;
+	[SerializeField] private StatFloat _jumpHeight = 5.0f;
+	[SerializeField] private StatOverride<float> _aerialJumpHeight = new(5.0f);
+	[SerializeField] private StatFloat _jumpSpeed = 0.5f;
+	[SerializeField] private StatInt _midairJumps = 0;
 	[SerializeField] private float _jumpBufferTime = 0.25f;
 
 	[Header("Gravity")]
-	[SerializeField] private float _maxFallSpeed = 7.5f;
-	[SerializeField] private float _fallingGravityMult = 2.0f;
-	[SerializeField] private float _fastFallMult = 2.5f;
+	[SerializeField] private StatFloat _maxFallSpeed = 7.5f;
+	[SerializeField] private StatMultiplier _fallingGravityMult = new(2.0f);
+	[SerializeField] private StatMultiplier _fastFallMult = new(2.5f);
 
 	[Header("Ground Detection")]
 	public LayerMask _groundLayer = Physics2D.DefaultRaycastLayers;
@@ -46,30 +46,30 @@ public class PlayerMoveStats : ScriptableObject
 
 	#region Public Properties
 	// Stat values
-	public StatFloat MaxSpeed { get; private set; }
-	public StatFloat Acceleration { get; private set; }
-	public StatFloat Drag { get; private set; }
+	public StatFloat MaxSpeed { get => _maxSpeed; private set => _maxSpeed = value; }
+	public StatFloat Acceleration { get => _acceleration; private set => _acceleration = value; }
+	public StatFloat Drag { get => _drag; private set => _drag = value; }
 
-	public StatFloat JumpHeight { get; private set; }
-	public StatFloat JumpSpeed { get; private set; }
-	public StatInt MidairJumps { get; private set; }
+	public StatFloat JumpHeight { get => _jumpHeight; private set => _jumpHeight = value; }
+	public StatFloat JumpSpeed { get => _jumpSpeed; private set => _jumpSpeed = value; }
+	public StatInt MidairJumps { get => _midairJumps; private set => _midairJumps = value; }
 
 	public StatFloat Gravity { get; private set; }
 
-	public StatFloat MaxFallSpeed { get; private set; }
+	public StatFloat MaxFallSpeed { get => _maxFallSpeed; private set => _maxFallSpeed = value; }
 
 	// Modifiers
-	public StatOverride<float> AerialMaxSpeed { get; private set; }
-	public StatMultiplier RunSpeed { get; private set; }
-	public StatOverride<float> AerialAcceleration { get; private set; }
-	public StatOverride<float> AerialDrag { get; private set; }
+	public StatOverride<float> AerialMaxSpeed { get => _aerialMaxSpeed; private set => _aerialMaxSpeed = value; }
+	public StatMultiplier RunSpeed { get => _runSpeedMult; private set => _runSpeedMult = value; }
+	public StatOverride<float> AerialAcceleration { get => _aerialAcceleration; private set => _aerialAcceleration = value; }
+	public StatOverride<float> AerialDrag { get => _aerialDrag; private set => _aerialDrag = value; }
 
-	public StatOverride<float> AerialJumpHeight { get; private set; }
+	public StatOverride<float> AerialJumpHeight { get => _aerialJumpHeight; private set => _aerialJumpHeight = value; }
 	public StatDecrease MidairJumpsUsed { get; private set; }
 
-	public StatMultiplier FallingGravity { get; private set; }
+	public StatMultiplier FallingGravity { get => _fallingGravityMult; private set => _fallingGravityMult = value; }
 
-	public StatMultiplier FastFallSpeed { get; private set; }
+	public StatMultiplier FastFallSpeed { get => _fastFallMult; private set => _fastFallMult = value; }
 
 	// Other Values
 	public LayerMask GroundLayer { get => _groundLayer; set => _groundLayer = value; }
@@ -81,6 +81,8 @@ public class PlayerMoveStats : ScriptableObject
 
 	public void OnEnable()
 	{
+		Gravity = new();
+
 		ResetModifiers();
 		CalculateValues();
 	}
