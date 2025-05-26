@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fd9e0c16776d4b4f8a1633cfef1fa88, type: 3}
+  m_Name: Player Stats
+  m_EditorClassIdentifier: 
+  _maxSpeed:
+    _baseValue: 2
+  _aerialMaxSpeed:
+    _enabled: 0
+    _newValue: 3
+  _runSpeedMult:
+    _enabled: 1
+    _multiplier: 2
+  _acceleration:
+    _baseValue: 2
+  _aerialAcceleration:
+    _enabled: 0
+    _newValue: 1
+  _drag:
+    _baseValue: 8
+  _aerialDrag:
+    _enabled: 0
+    _newValue: 1
+  _jumpHeight:
+    _baseValue: 5
+  _aerialJumpHeight:
+    _enabled: 0
+    _newValue: 5
+  _jumpSpeed:
+    _baseValue: 0.5
+  _midairJumps:
+    _baseValue: 0
+  _jumpBufferTime: 0.25
+  _maxFallSpeed:
+    _baseValue: 7.5
+  _fallingGravityMult:
+    _enabled: 1
+    _multiplier: 2
+  _fastFallMult:
+    _enabled: 1
+    _multiplier: 2.5
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 59
+  _detectionArea:
+    serializedVersion: 2
+    x: 0
+    y: -1
+    width: 0.5
+    height: 0.2
+  _coyoteTime: 0.25
+  groundCast:
+    Hide: 0
+    Color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  jumpTrajectory:
+    Hide: 0
+    Color: {r: 1, g: 1, b: 1, a: 1}
+    Resolution: 20
+    MaxLength: 100
