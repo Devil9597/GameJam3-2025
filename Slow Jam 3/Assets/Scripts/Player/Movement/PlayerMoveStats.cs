@@ -140,9 +140,12 @@ public struct GroundCastGizmoSettings
 [Serializable]
 public struct JumpTrajectoryGizmoSettings
 {
+	public enum Direction { Right, Left };
+
 	public bool Hide;
 	public Color Color;
 
+	public Direction direction;
 	public int Resolution;
 	public int MaxLength;
 
