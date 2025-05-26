@@ -50,7 +50,7 @@ MonoBehaviour:
     _multiplier: 2.5
   _groundLayer:
     serializedVersion: 2
-    m_Bits: 59
+    m_Bits: 8
   _detectionArea:
     serializedVersion: 2
     x: 0

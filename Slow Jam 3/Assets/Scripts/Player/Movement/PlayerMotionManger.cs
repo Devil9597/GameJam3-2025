@@ -42,11 +42,11 @@ public class PlayerMotionManger : MonoBehaviour
 					action(controllers[i]);
 				}
 			}
-
-			iterateControllers(c => c.BeforeMovement());
-			iterateControllers(c => c.ApplyMovement(Time.fixedDeltaTime));
-			iterateControllers(c => c.AfterMovement());
 		}
+
+		iterateControllers(c => c.BeforeMovement());
+		iterateControllers(c => c.ApplyMovement(Time.fixedDeltaTime));
+		iterateControllers(c => c.AfterMovement());
 	}
 
 	[ContextMenu("Get Controllers")]
