@@ -11,7 +11,7 @@ namespace Systems.Stats
 		/// </summary>
 		T BaseValue { get; }
 		/// <summary>
-		/// The <typeparamref name="T"/> value after all modifier have been applied.
+		/// The <typeparamref name="T"/> value after all modifiers have been applied.
 		/// </summary>
 		T ModifiedValue { get; }
 		/// <summary>

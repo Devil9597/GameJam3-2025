@@ -83,6 +83,9 @@ public class PlayerMoveStats : ScriptableObject
 	{
 		Gravity = new();
 
+		JumpBuffer = new CountdownTimer(_jumpBufferTime);
+		CoyoteTimer = new CountdownTimer(_coyoteTime);
+
 		ResetModifiers();
 		CalculateValues();
 	}

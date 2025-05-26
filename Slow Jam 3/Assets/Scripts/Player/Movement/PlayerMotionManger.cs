@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Utilities.Extensions;
 
@@ -6,37 +7,39 @@ public class PlayerMotionManger : MonoBehaviour
 {
 	private Rigidbody2D _body;
 
-	[SerializeField] private bool _isGrounded;
-	[SerializeField] private PlayerInputHandler _inputHandler;
+	public bool isGrounded;
+	public PlayerInputHandler inputHandler;
+	public PlayerMoveStats stats;
 	[Space]
-	[SerializeField] private PlayerMotionController[] _controllers;
+	[Tooltip("The controllers managed by this script. Each controller is processed in order of the array.")]
+	public PlayerMotionController[] controllers;
 
 	public void Start()
 	{
 		TryGetComponent(out _body);
 
-		for (int i = 0; i < _controllers.Length; i++)
+		Action initialize = delegate { };
+		for (int i = 0; i < controllers.Length; i++)
 		{
-			_controllers[i].Manger = this;
-			_controllers[i].Body = _body;
-			_controllers[i].InputHandler = _inputHandler;
-		}
+			controllers[i].Manger = this;
+			controllers[i].Body = _body;
+			controllers[i].InputHandler = inputHandler;
+			controllers[i].Stats = stats;
 
-		for (int i = 0; i < _controllers.Length; i++)
-		{
-			_controllers.Initialize();
+			initialize += controllers[i].Initialize;
 		}
+		initialize();
 	}
 
 	public void FixedUpdate()
 	{
 		void iterateControllers(System.Action<PlayerMotionController> action)
 		{
-			for (int i = 0; i < _controllers.Length; i++)
+			for (int i = 0; i < controllers.Length; i++)
 			{
-				if (_controllers[i] != null && _controllers[i].enabled)
+				if (controllers[i] != null && controllers[i].enabled)
 				{
-					action(_controllers[i]);
+					action(controllers[i]);
 				}
 			}
 
@@ -49,6 +52,6 @@ public class PlayerMotionManger : MonoBehaviour
 	[ContextMenu("Get Controllers")]
 	private void GetControllers()
 	{
-		_controllers = this.Get().Components<PlayerMotionController>().InChildren();
+		controllers = this.Get().Components<PlayerMotionController>().InChildren();
 	}
 }

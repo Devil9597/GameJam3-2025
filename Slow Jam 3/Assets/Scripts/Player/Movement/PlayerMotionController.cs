@@ -5,6 +5,7 @@ public abstract class PlayerMotionController : MonoBehaviour
 	public PlayerMotionManger Manger { get; set; }
 	public Rigidbody2D Body { get; set; }
 	public PlayerInputHandler InputHandler { get; set; }
+	public PlayerMoveStats Stats { get; set; }
 
 	public abstract void Initialize();
 
