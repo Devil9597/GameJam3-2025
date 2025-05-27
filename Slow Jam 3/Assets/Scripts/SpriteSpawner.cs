@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -12,133 +14,174 @@ public class SpriteSpawner : MonoBehaviour
     [SerializeField] private float _rotationRandomMin = -20;
     [SerializeField] private float _rotationRandomMax = 20;
 
-    [SerializeField] private float _targetPercent = 0.5f;
 
     [SerializeField] private SplineContainer _splineToFollow;
     [SerializeField] private GameObject _spritePrefab;
 
+    [SerializeField] private Vector2 Size = new Vector2(16, 16);
+
+    
     /// <summary>
-    /// spawns +1 to account for the end point of the spline
+    /// determines how many sprites to place over the entire spline
     /// </summary>
-    [SerializeField] private float _spawns = 100;
+    [SerializeField] private int _splineResolution = 100;
 
     [SerializeField] private EdgeCollider2D _edgeCollider;
+    /// <summary>
+    /// how many collision points to place over the spline
+    /// </summary>
     [SerializeField] private int _colliderRes = 100;
 
-    private List<(GameObject sprite, float percent)> _sprites = new();
+
+    [SerializeField] private Transform test;
+
+    [SerializeField] private float _currentProgres = 0;
+    [SerializeField] private float _speed = 1;
+    [SerializeField, Range(0, 1)] private float _target = 0.5f;
+
+    [SerializeField] private List<SpriteVisuals> _sprites = new();
+
+    [FormerlySerializedAs("_particleSystem")] [SerializeField]
+    private ParticleSystem _growParticles;
+
+
+    [Serializable]
+    class SpriteVisuals
+    {
+        public GameObject Sprite;
+        public float Percent;
+    }
 
     void Start()
     {
-        DrawToPercent(_targetPercent);
+        SegmentSpline();
         SetCollider();
     }
 
-    private void SetCollider()
+
+    private void Update()
     {
-        _edgeCollider.Reset();
-        var points = new List<Vector2>();
-        for (int i = 0; i < _colliderRes; i++)
+        if (Input.GetKeyDown(KeyCode.Q))
         {
-            var percent = i / (float)_colliderRes;
-            if (percent < _targetPercent)
+            _target = 0;
+        }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            _target = 1;
+        }
+
+        var step = _speed * Time.deltaTime;
+        _currentProgres = Mathf.MoveTowards(_currentProgres, _target, step);
+        var worldPos = _splineToFollow.EvaluatePosition(_currentProgres);
+
+        SetCollider();
+        if (_currentProgres < _target)
+        {
+            // moving forward
+            for (int i = 0; i < _sprites.Count; i++)
             {
-                var pos = _splineToFollow.EvaluatePosition(percent);
-                pos = transform.InverseTransformPoint(pos);
-                points.Add((Vector3)pos);
+                var sprite = _sprites[i];
+                if (sprite.Percent > _currentProgres)
+                {
+                    // reached end of out current progress
+                    break;
+                }
+
+                if (sprite.Percent < _currentProgres)
+                {
+                    sprite.Sprite.SetActive(true);
+                }
             }
         }
 
-        _edgeCollider.SetPoints(points);
+        if (_currentProgres > _target)
+        {
+            // moving backward
+            for (int i = _sprites.Count - 1; i >= 0; i--)
+            {
+                var sprite = _sprites[i];
+
+                if (sprite.Percent < _currentProgres)
+                {
+                    //reached end of current prog
+                    break;
+                }
+
+                if (sprite.Percent > _currentProgres)
+                {
+                    sprite.Sprite.SetActive(false);
+                }
+                else
+                {
+                    // breaking early here should be ok since any sprites after this will always be active 
+                    // assuming the order isnt broken
+                    break;
+                }
+            }
+        }
+
+
+        _growParticles.transform.position = worldPos;
     }
 
+
     // be normal and make it an overload when you sober up
-    private void DrawToPercentRefresh()
-    {
-        for (int i = 0; i < _sprites.Count; i++)
-        {
-            var sprite = _sprites[i];
-            Destroy(sprite.sprite);
-            _sprites.Remove(sprite);
-        }
-    }
+
 
     [ContextMenu("Update Vine")]
     private void DrawToPercent()
     {
         if (Application.isPlaying)
         {
-            DrawToPercent(_targetPercent);
+            foreach (var s in _sprites)
+            {
+            }
         }
     }
 
-    private void DrawToPercent(float percent)
+    private void SetCollider()
     {
-        if (_sprites.Count != 0)
+        _edgeCollider.Reset();
+        List<Vector2> points = new();
+        for (int i = 1; i < _colliderRes + 1; i++)
         {
-            var last = _sprites[_sprites.Count - 1];
+            var percent = (float)i / _colliderRes;
 
-            while (last.percent > percent)
+            if (percent >= _currentProgres)
             {
-                _sprites.Remove(last);
-                Destroy(last.sprite);
-                last = _sprites[_sprites.Count - 1];
+                break;
             }
+
+
+            var pos = _splineToFollow.EvaluatePosition(percent);
+            pos = transform.InverseTransformPoint(pos);
+
+            points.Add(new Vector2(pos.x, pos.y));
         }
 
-
-        var length = _splineToFollow.CalculateLength();
-
-        for (int i = 0; i <= _spawns; i++)
-        {
-            var p = i / _spawns;
-            if (i < _sprites.Count)
-            {
-                var existing = _sprites[i];
-                if (existing.percent >= p)
-                {
-                    continue;
-                }
-            }
-
-
-            if (p <= percent)
-            {
-                var pos = _splineToFollow.EvaluatePosition(p);
-                var r = _splineToFollow.EvaluateTangent(p);
-
-
-                var rotation = new Vector3(0, 0,
-                    _rotationOffset + Random.Range(_rotationRandomMin, _rotationRandomMax));
-                Debug.Log(rotation);
-                var sprite = Instantiate(_spritePrefab, transform);
-                sprite.transform.position = pos;
-                sprite.transform.up = r;
-                sprite.transform.rotation =
-                    Quaternion.Euler(sprite.transform.rotation.eulerAngles + rotation);
-
-                _sprites.Add((sprite, p));
-            }
-        }
-
-        SetCollider();
-        _targetPercent = percent;
-        _lastTarget = _targetPercent;
+        _edgeCollider.points = points.ToArray();
     }
 
-    private float _lastTarget;
-
-    void Update()
+    private void SegmentSpline()
     {
-        if (!Mathf.Approximately(_lastTarget, _targetPercent))
+        for (int i = 0; i < _sprites.Count; i++)
         {
-            DrawToPercent(_targetPercent);
-        }
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
+            Destroy(_sprites[i].Sprite);
         }
 
-        if (Input.GetKeyDown(KeyCode.E))
+        _sprites.Clear();
+
+        for (int i = 1; i < _splineResolution + 1; i++)
         {
+            var percent = (float)i / _splineResolution;
+            var sprite = Instantiate(_spritePrefab, transform);
+            sprite.transform.position = _splineToFollow.EvaluatePosition(percent);
+            sprite.SetActive(false);
+            _sprites.Add(new SpriteVisuals() { Percent = percent, Sprite = sprite });
+
+            var rotRandom = Random.Range(_rotationRandomMin, _rotationRandomMax);
+            sprite.transform.rotation = Quaternion.Euler(new Vector3(0, 0, _rotationOffset + rotRandom));
         }
     }
 }
