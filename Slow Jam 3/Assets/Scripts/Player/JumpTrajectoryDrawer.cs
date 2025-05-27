@@ -34,6 +34,9 @@ public class JumpTrajectoryDrawer : MonoBehaviour
 		// D = (origin + transform position)
 		Vector2 position = (Vector2)transform.position + origin;
 
+		_points.Add(position);
+
+
 		/*
 		 * Each step:
 		 * apply gravity up to max fall speed. if descending, apply the falling modifier

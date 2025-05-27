@@ -43,10 +43,15 @@ public class PlayerHorizontalMovement : PlayerMotionController
 
 	public override void ApplyMovement(in float deltaTime)
 	{
-		if (_input.Multiplier != 0f)
+		if (_input.Multiplier != 0f && Mathf.Abs(_xVelocity) < Stats.MaxSpeed.ModifiedValue)
 		{
 			// Use acceleration
 			Accelerate(deltaTime, Stats.Acceleration.ModifiedValue, Stats.MaxSpeed.ModifiedValue);
+		}
+		else if (Mathf.Abs(_xVelocity) >= Stats.MaxSpeed.ModifiedValue)
+		{
+			// Use drag to decelerate to a lower max speed
+			Accelerate(deltaTime, Stats.Drag.ModifiedValue, Stats.MaxSpeed.ModifiedValue);
 		}
 		else
 		{
