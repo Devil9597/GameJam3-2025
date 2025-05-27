@@ -21,6 +21,7 @@ public class PlayerMoveStats : ScriptableObject
 	[SerializeField] private StatFloat _jumpSpeed = 0.5f;
 	[SerializeField] private StatInt _midairJumps = 0;
 	[SerializeField] private float _jumpBufferTime = 0.25f;
+	[SerializeField, Range(-1.0f, +1.0f)] private float _jumpCancelFactor = 0.1f;
 
 	[Header("Gravity")]
 	[SerializeField] private StatFloat _maxFallSpeed = 7.5f;
@@ -29,8 +30,10 @@ public class PlayerMoveStats : ScriptableObject
 
 	[Header("Ground Detection")]
 	public LayerMask _groundLayer = Physics2D.DefaultRaycastLayers;
-	public Rect _detectionArea = new(0, -1, 0.5f, 0.2f);
+	public Rect _floorDetectionArea = new(-0.25f, -1, 0.5f, 0.2f);
+	public Rect _ceilingDetectionArea = new(-0.25f, 1, 0.5f, 0.2f);
 	[SerializeField] private float _coyoteTime = 0.25f;
+
 
 #if UNITY_EDITOR
 	[Header("Debug Settings")]
@@ -72,8 +75,11 @@ public class PlayerMoveStats : ScriptableObject
 	public StatMultiplier FastFallSpeed { get => _fastFallMult; private set => _fastFallMult = value; }
 
 	// Other Values
+	public float JumpCancelFactor { get => _jumpCancelFactor; set => _jumpCancelFactor = value; }
+
 	public LayerMask GroundLayer { get => _groundLayer; set => _groundLayer = value; }
-	public Rect GroundDetectionArea { get => _detectionArea; set => _detectionArea = value; }
+	public Rect FloorDetectionArea { get => _floorDetectionArea; set => _floorDetectionArea = value; }
+	public Rect CeilingDetectionArea { get => _ceilingDetectionArea; set => _ceilingDetectionArea = value; }
 
 	public CountdownTimer JumpBuffer { get; private set; }
 	public CountdownTimer CoyoteTimer { get; private set; }
@@ -87,10 +93,10 @@ public class PlayerMoveStats : ScriptableObject
 		CoyoteTimer = new CountdownTimer(_coyoteTime);
 
 		ResetModifiers();
-		CalculateValues();
+		CalculateGravity();
 	}
 
-	private void CalculateValues()
+	public void CalculateGravity()
 	{
 		float t = JumpHeight.ModifiedValue / JumpSpeed.ModifiedValue;
 		Gravity.BaseValue = -(2f * JumpHeight.ModifiedValue) / t;
@@ -111,14 +117,14 @@ public class PlayerMoveStats : ScriptableObject
 		MaxFallSpeed.ClearModifiers();
 
 		// Remove additional callbacks
-		AerialJumpHeight.OnValueChange -= CalculateValues;
+		AerialJumpHeight.OnValueChange -= CalculateGravity;
 
 		// Re-add persistent modifiers and callbacks
 		MaxSpeed.AddModifiers(AerialMaxSpeed, RunSpeed);
 		Acceleration.AddModifier(AerialAcceleration);
 		Drag.AddModifier(AerialDrag);
 
-		AerialJumpHeight.OnValueChange += CalculateValues;
+		AerialJumpHeight.OnValueChange += CalculateGravity;
 		JumpHeight.AddModifier(AerialJumpHeight);
 		//JumpSpeed
 		//MidairJumps

@@ -7,6 +7,9 @@ public abstract class PlayerMotionController : MonoBehaviour
 	public PlayerInputHandler InputHandler { get; set; }
 	public PlayerMoveStats Stats { get; set; }
 
+	/// <summary>
+	/// This method is run by the <see cref="Manager"/> on start after all properties of this controller are set.
+	/// </summary>
 	public abstract void Initialize();
 
 	/// <summary>

@@ -8,7 +8,6 @@ public class JumpTrajectoryDrawer : MonoBehaviour
 	public PlayerMoveStats stats;
 	public Vector2 origin;
 
-
 	private List<Vector2> _points = new();
 
 	public const float HUNDREDTHS_TO_SECONDS = 0.01f;
