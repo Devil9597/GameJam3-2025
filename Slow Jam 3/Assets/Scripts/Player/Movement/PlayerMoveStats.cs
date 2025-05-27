@@ -98,8 +98,11 @@ public class PlayerMoveStats : ScriptableObject
 
 	public void CalculateGravity()
 	{
+		// d = !, v = !, t = ?, a = ?
+		// a = v/t, v = d/t
+		// a = d/t^2
 		float t = JumpHeight.ModifiedValue / JumpSpeed.ModifiedValue;
-		Gravity.BaseValue = -(2f * JumpHeight.ModifiedValue) / t;
+		Gravity.BaseValue = -(JumpHeight.ModifiedValue / Mathf.Pow(t, 2));
 	}
 
 	private void ResetModifiers()

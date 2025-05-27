@@ -4,14 +4,34 @@ using Utilities.Serializables;
 
 public class PlayerHorizontalMovement : PlayerMotionController
 {
-	private StatMultiplier _input;
-	private float _xVelocity;
+	public const string TR_X_VELOCITY = "x velocity";
+
+	[SerializeField] private StatMultiplier _input;
+	[SerializeField] private float _xVelocity;
+
+	public void OnEnable()
+	{
+		if (InputHandler != null)
+		{
+			InputHandler.Player.Move.AddControl(InputHelpers.ContextPhase.All, Move_performed);
+			InputHandler.Player.Sprint.performed += Sprint_performed;
+			InputHandler.Player.Sprint.canceled += Sprint_canceled;
+		}
+	}
+
+	public void OnDisable()
+	{
+		if (InputHandler != null)
+		{
+			InputHandler.Player.Move.RemoveControl(InputHelpers.ContextPhase.All, Move_performed);
+			InputHandler.Player.Sprint.performed -= Sprint_performed;
+			InputHandler.Player.Sprint.canceled -= Sprint_canceled;
+		}
+	}
 
 	public override void Initialize()
 	{
-		InputHandler.Player.Move.AddControl(InputHelpers.ContextPhase.All, Move_performed);
-		InputHandler.Player.Sprint.performed += this.Sprint_performed;
-		InputHandler.Player.Sprint.canceled += this.Sprint_canceled;
+		OnEnable();
 
 		_input = new(0f);
 		_xVelocity = 0f;
@@ -36,9 +56,13 @@ public class PlayerHorizontalMovement : PlayerMotionController
 
 	public override void BeforeMovement()
 	{
-		Stats.AerialMaxSpeed.Enabled = !Manger.isGrounded;
-		Stats.AerialAcceleration.Enabled = !Manger.isGrounded;
-		Stats.AerialDrag.Enabled = !Manger.isGrounded;
+		Manger.SetValue(TR_X_VELOCITY, _xVelocity);
+
+		Manger.GetValue(PlayerGroundDetector.TR_IS_GROUNDED, out bool isGrounded);
+
+		Stats.AerialMaxSpeed.Enabled = !isGrounded;
+		Stats.AerialAcceleration.Enabled = !isGrounded;
+		Stats.AerialDrag.Enabled = !isGrounded;
 	}
 
 	public override void ApplyMovement(in float deltaTime)
@@ -64,7 +88,7 @@ public class PlayerHorizontalMovement : PlayerMotionController
 	{
 		// Acceleration is split in half for proper interpolation.
 		_xVelocity = Mathf.MoveTowards(_xVelocity, targetVelocity, acceleration * deltaTime / 2);
-		Body.linearVelocityX = _xVelocity;
+		Manger.SetValue(TR_X_VELOCITY, _xVelocity);
 		_xVelocity = Mathf.MoveTowards(_xVelocity, targetVelocity, acceleration * deltaTime / 2);
 	}
 }
