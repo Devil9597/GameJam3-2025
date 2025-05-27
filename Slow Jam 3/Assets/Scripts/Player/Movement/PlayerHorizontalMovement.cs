@@ -35,6 +35,7 @@ public class PlayerHorizontalMovement : PlayerMotionController
 
 		_input = new(0f);
 		_xVelocity = 0f;
+		Stats.RunSpeed.Enabled = false;
 
 		Stats.Acceleration.AddModifier(_input);
 	}
@@ -67,25 +68,25 @@ public class PlayerHorizontalMovement : PlayerMotionController
 
 	public override void ApplyMovement(in float deltaTime)
 	{
-		if (_input.Multiplier != 0f && Mathf.Abs(_xVelocity) < Stats.MaxSpeed.ModifiedValue)
+		Debug.Assert(Stats.MaxSpeed.ModifiedValue >= 0);
+		if (_input.Multiplier != 0 && Mathf.Abs(_xVelocity) <= Stats.MaxSpeed.ModifiedValue)
 		{
 			// Use acceleration
-			Accelerate(deltaTime, Stats.Acceleration.ModifiedValue, Stats.MaxSpeed.ModifiedValue);
-		}
-		else if (Mathf.Abs(_xVelocity) >= Stats.MaxSpeed.ModifiedValue)
-		{
-			// Use drag to decelerate to a lower max speed
-			Accelerate(deltaTime, Stats.Drag.ModifiedValue, Stats.MaxSpeed.ModifiedValue);
+			Debug.Log("Acceleration: " + Stats.Acceleration.ModifiedValue);
+			Accelerate(deltaTime, Stats.Acceleration.ModifiedValue, Stats.MaxSpeed.ModifiedValue * Mathf.Sign(Stats.Acceleration.ModifiedValue));
 		}
 		else
 		{
 			// use drag
+			Debug.Log("Drag");
 			Accelerate(deltaTime, Stats.Drag.ModifiedValue, 0);
 		}
 	}
 
-	private void Accelerate(in float deltaTime, in float acceleration, in float targetVelocity)
+	private void Accelerate(in float deltaTime, float acceleration, float targetVelocity)
 	{
+		Debug.Log(targetVelocity);
+		acceleration = Mathf.Abs(acceleration);
 		// Acceleration is split in half for proper interpolation.
 		_xVelocity = Mathf.MoveTowards(_xVelocity, targetVelocity, acceleration * deltaTime / 2);
 		Manger.SetValue(TR_X_VELOCITY, _xVelocity);
