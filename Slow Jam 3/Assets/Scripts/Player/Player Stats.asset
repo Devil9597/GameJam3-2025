@@ -13,15 +13,15 @@ MonoBehaviour:
   m_Name: Player Stats
   m_EditorClassIdentifier: 
   _maxSpeed:
-    _baseValue: 2
+    _baseValue: 4.49
   _aerialMaxSpeed:
     _enabled: 0
     _newValue: 3
   _runSpeedMult:
-    _enabled: 1
+    _enabled: 0
     _multiplier: 2
   _acceleration:
-    _baseValue: 2
+    _baseValue: 50
   _aerialAcceleration:
     _enabled: 0
     _newValue: 1
@@ -34,36 +34,46 @@ MonoBehaviour:
     _baseValue: 5
   _aerialJumpHeight:
     _enabled: 0
-    _newValue: 5
+    _newValue: 4
   _jumpSpeed:
-    _baseValue: 0.5
+    _baseValue: 10
   _midairJumps:
     _baseValue: 0
-  _jumpBufferTime: 0.25
+  _jumpCancelFactor: 0.1
   _maxFallSpeed:
-    _baseValue: 7.5
+    _baseValue: 20
   _fallingGravityMult:
-    _enabled: 1
+    _enabled: 0
     _multiplier: 2
   _fastFallMult:
-    _enabled: 1
+    _enabled: 0
     _multiplier: 2.5
   _groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  _detectionArea:
+  _floorDetectionArea:
     serializedVersion: 2
     x: -0.25
     y: -1
     width: 0.5
     height: 0.2
+  _snappingRayLength: 1
+  _ceilingDetectionArea:
+    serializedVersion: 2
+    x: -0.25
+    y: 1
+    width: 0.5
+    height: 0.2
   _coyoteTime: 0.25
-  groundCast:
+  floorCast:
     Hide: 0
     Color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  roofCast:
+    Hide: 0
+    Color: {r: 0.6784314, g: 1, b: 0.1843137, a: 1}
   jumpTrajectory:
     Hide: 0
     Color: {r: 1, g: 1, b: 1, a: 1}
     direction: 0
-    Resolution: 20
-    MaxLength: 100
+    Resolution: 60
+    MaxLength: 300

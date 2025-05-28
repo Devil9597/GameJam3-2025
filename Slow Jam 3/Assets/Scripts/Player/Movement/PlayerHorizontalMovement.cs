@@ -69,23 +69,26 @@ public class PlayerHorizontalMovement : PlayerMotionController
 	public override void ApplyMovement(in float deltaTime)
 	{
 		Debug.Assert(Stats.MaxSpeed.ModifiedValue >= 0);
+
 		if (_input.Multiplier != 0 && Mathf.Abs(_xVelocity) <= Stats.MaxSpeed.ModifiedValue)
 		{
+			if (Mathf.Sign(Stats.Acceleration.ModifiedValue) != Mathf.Sign(_xVelocity))
+			{
+				_xVelocity = 0;
+			}
+
 			// Use acceleration
-			Debug.Log("Acceleration: " + Stats.Acceleration.ModifiedValue);
 			Accelerate(deltaTime, Stats.Acceleration.ModifiedValue, Stats.MaxSpeed.ModifiedValue * Mathf.Sign(Stats.Acceleration.ModifiedValue));
 		}
 		else
 		{
 			// use drag
-			Debug.Log("Drag");
 			Accelerate(deltaTime, Stats.Drag.ModifiedValue, 0);
 		}
 	}
 
 	private void Accelerate(in float deltaTime, float acceleration, float targetVelocity)
 	{
-		Debug.Log(targetVelocity);
 		acceleration = Mathf.Abs(acceleration);
 		// Acceleration is split in half for proper interpolation.
 		_xVelocity = Mathf.MoveTowards(_xVelocity, targetVelocity, acceleration * deltaTime / 2);

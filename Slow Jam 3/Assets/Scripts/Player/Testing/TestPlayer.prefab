@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0407965065790a42b53d99e37e860da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _castOrigin: {x: 0, y: 0}
+  _feetPosition: -1
   _castingPeriod:
     _delay: 0
     _offset: 0
@@ -279,4 +279,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: 686bd2988e3c5274db88090c5e91eb27, type: 2}
-  origin: {x: 0, y: 0}
+  origin: {x: 0, y: -1}
