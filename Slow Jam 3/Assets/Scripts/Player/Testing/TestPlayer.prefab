@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0407965065790a42b53d99e37e860da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _castOrigin: {x: 0, y: 0}
+  _feetPosition: -1
   _castingPeriod:
     _delay: 0
     _offset: 0

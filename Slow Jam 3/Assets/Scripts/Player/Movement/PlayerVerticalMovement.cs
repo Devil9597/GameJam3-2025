@@ -65,6 +65,10 @@ public class PlayerVerticalMovement : PlayerMotionController
 		{
 			StopJump();
 		}
+		else if (_yVelocity <= 0)
+		{
+			Manger.SetValue(PlayerGroundDetector.TR_DISABLE_SNAPPING, false);
+		}
 
 		// Handle Ceiling
 		if (_yVelocity > 0 && hitCeiling)
@@ -121,6 +125,7 @@ public class PlayerVerticalMovement : PlayerMotionController
 
 		if (canJump)
 		{
+			Manger.SetValue(PlayerGroundDetector.TR_DISABLE_SNAPPING, value: true);
 			_yVelocity = Stats.JumpSpeed.ModifiedValue;
 		}
 	}

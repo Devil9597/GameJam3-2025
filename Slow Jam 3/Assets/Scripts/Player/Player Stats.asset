@@ -18,10 +18,10 @@ MonoBehaviour:
     _enabled: 0
     _newValue: 3
   _runSpeedMult:
-    _enabled: 1
+    _enabled: 0
     _multiplier: 2
   _acceleration:
-    _baseValue: 2
+    _baseValue: 50
   _aerialAcceleration:
     _enabled: 0
     _newValue: 1
@@ -33,28 +33,35 @@ MonoBehaviour:
   _jumpHeight:
     _baseValue: 5
   _aerialJumpHeight:
-    _enabled: 0
+    _enabled: 1
     _newValue: 5
   _jumpSpeed:
-    _baseValue: 0.5
+    _baseValue: 10
   _midairJumps:
     _baseValue: 0
   _jumpBufferTime: 0.25
+  _jumpCancelFactor: 0.1
   _maxFallSpeed:
-    _baseValue: 7.5
+    _baseValue: 20
   _fallingGravityMult:
-    _enabled: 1
+    _enabled: 0
     _multiplier: 2
   _fastFallMult:
-    _enabled: 1
+    _enabled: 0
     _multiplier: 2.5
   _groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  _detectionArea:
+  _floorDetectionArea:
     serializedVersion: 2
     x: -0.25
     y: -1
+    width: 0.5
+    height: 0.2
+  _ceilingDetectionArea:
+    serializedVersion: 2
+    x: -0.25
+    y: 1
     width: 0.5
     height: 0.2
   _coyoteTime: 0.25

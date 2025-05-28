@@ -29,16 +29,20 @@ public class PlayerMoveStats : ScriptableObject
 	[SerializeField] private StatMultiplier _fastFallMult = new(2.5f);
 
 	[Header("Ground Detection")]
-	public LayerMask _groundLayer = Physics2D.DefaultRaycastLayers;
-	public Rect _floorDetectionArea = new(-0.25f, -1, 0.5f, 0.2f);
-	public Rect _ceilingDetectionArea = new(-0.25f, 1, 0.5f, 0.2f);
+	[SerializeField] private LayerMask _groundLayer = Physics2D.DefaultRaycastLayers;
+	[SerializeField] private Rect _floorDetectionArea = new(-0.25f, -1, 0.5f, 0.2f);
+	[SerializeField] private float _snappingRayLength = 1f;
+	[SerializeField] private Rect _ceilingDetectionArea = new(-0.25f, 1, 0.5f, 0.2f);
 	[SerializeField] private float _coyoteTime = 0.25f;
 
 
 #if UNITY_EDITOR
 	[Header("Debug Settings")]
-	public GroundCastGizmoSettings groundCast = new() {
+	public GroundCastGizmoSettings floorCast = new() {
 		Color = Color.yellow
+	};
+	public GroundCastGizmoSettings roofCast = new() {
+		Color = Color.greenYellow,
 	};
 	public JumpTrajectoryGizmoSettings jumpTrajectory = new() {
 		Color = Color.white,
@@ -79,6 +83,7 @@ public class PlayerMoveStats : ScriptableObject
 
 	public LayerMask GroundLayer { get => _groundLayer; set => _groundLayer = value; }
 	public Rect FloorDetectionArea { get => _floorDetectionArea; set => _floorDetectionArea = value; }
+	public float SnappingRayLength { get => _snappingRayLength; set => _snappingRayLength = value; }
 	public Rect CeilingDetectionArea { get => _ceilingDetectionArea; set => _ceilingDetectionArea = value; }
 
 	public CountdownTimer JumpBuffer { get; private set; }
@@ -98,9 +103,6 @@ public class PlayerMoveStats : ScriptableObject
 
 	public void CalculateGravity()
 	{
-		// d = !, v = !, t = ?, a = ?
-		// a = v/t, v = d/t
-		// a = d/t^2
 		float t = JumpHeight.ModifiedValue / JumpSpeed.ModifiedValue;
 		Gravity.BaseValue = -(JumpHeight.ModifiedValue / Mathf.Pow(t, 2));
 	}
