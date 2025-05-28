@@ -9,11 +9,10 @@ public class PlayerGroundDetector : PlayerMotionController
 		TR_HIT_CEILING = "Hit Ceiling",
 		TR_DISABLE_SNAPPING = "Snapping Disabled";
 
-	[Tooltip("The y position of the player's feet, relative to rigidbody position.")]
-	[SerializeField] private float _feetPosition;
 	[SerializeField] private TimeSlice _castingPeriod;
 
 	private RaycastHit2D _groundHit, _roofHit;
+	private bool _wasGroundedLastFrame = false;
 
 	public override void Initialize()
 	{
@@ -37,10 +36,16 @@ public class PlayerGroundDetector : PlayerMotionController
 
 	public override void ApplyMovement(in float deltaTime)
 	{
-		if (Manger.GetValue(TR_IS_GROUNDED, out bool _) && !Manger.GetValue(TR_DISABLE_SNAPPING, out bool _))
+		if (_wasGroundedLastFrame)
+		{
+			_wasGroundedLastFrame = false;
+			Stats.CoyoteTimer.Start();
+		}
+
+		if (Manger.GetValue(TR_IS_GROUNDED, out _wasGroundedLastFrame) && !Manger.GetValue(TR_DISABLE_SNAPPING, out bool _))
 		{
 			// Snap to the ground beneath us
-			float feetPos = Body.position.y + (_feetPosition * transform.localScale.y);
+			float feetPos = Body.position.y + Stats.FootHeight;
 			Body.position = Body.position.Add(y: (_groundHit.point.y - feetPos) / 2);
 		}
 	}
