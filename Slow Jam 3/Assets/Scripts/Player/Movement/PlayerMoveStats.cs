@@ -20,7 +20,6 @@ public class PlayerMoveStats : ScriptableObject
 	[SerializeField] private StatOverride<float> _aerialJumpHeight = new(5.0f);
 	[SerializeField] private StatFloat _jumpSpeed = 0.5f;
 	[SerializeField] private StatInt _midairJumps = 0;
-	[SerializeField] private float _jumpBufferTime = 0.25f;
 	[SerializeField, Range(-1.0f, +1.0f)] private float _jumpCancelFactor = 0.1f;
 
 	[Header("Gravity")]
@@ -86,7 +85,6 @@ public class PlayerMoveStats : ScriptableObject
 	public float SnappingRayLength { get => _snappingRayLength; set => _snappingRayLength = value; }
 	public Rect CeilingDetectionArea { get => _ceilingDetectionArea; set => _ceilingDetectionArea = value; }
 
-	public CountdownTimer JumpBuffer { get; private set; }
 	public CountdownTimer CoyoteTimer { get; private set; }
 	#endregion
 
@@ -94,7 +92,6 @@ public class PlayerMoveStats : ScriptableObject
 	{
 		Gravity = new();
 
-		JumpBuffer = new CountdownTimer(_jumpBufferTime);
 		CoyoteTimer = new CountdownTimer(_coyoteTime);
 
 		ResetModifiers();
@@ -122,6 +119,7 @@ public class PlayerMoveStats : ScriptableObject
 	public void CalculateGravity()
 	{
 		float t = JumpHeight.ModifiedValue / JumpSpeed.ModifiedValue;
+		Gravity ??= new();
 		Gravity.BaseValue = -(JumpHeight.ModifiedValue / Mathf.Pow(t, 2));
 	}
 
