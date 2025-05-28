@@ -13,9 +13,10 @@ public class JumpTrajectoryDrawer : MonoBehaviour
 
 	private StatFloat _gravity;
 	private StatFloat _xVelocity, _yVelocity;
-	private StatMultiplier _reverseDirection;
 	private StatMultiplier _fallingGravity;
 	private StatClamp _maxFallSpeed;
+
+	private bool _initialized = false;
 
 	private RaycastHit2D _raycastHit;
 
@@ -24,38 +25,48 @@ public class JumpTrajectoryDrawer : MonoBehaviour
 	public void Awake()
 	{
 		// default values are set elsewhere
-		_gravity = new StatFloat(baseValue: default, _fallingGravity);
-		_xVelocity = new StatFloat(baseValue: default, _reverseDirection);
-		_yVelocity = new StatFloat(baseValue: default, _maxFallSpeed);
-
-		_reverseDirection = new StatMultiplier(multiplier: -1, enabled: false);
 		_fallingGravity = new StatMultiplier(multiplier: default, enabled: true);
 		_maxFallSpeed = new StatClamp(range: default, enabled: true);
+
+		_gravity = new StatFloat(baseValue: default, _fallingGravity);
+		_xVelocity = new StatFloat(baseValue: default);
+		_yVelocity = new StatFloat(baseValue: default, _maxFallSpeed);
+
+		_initialized = true;
 	}
 
 	public void OnDrawGizmos()
 	{
-		if (stats == null || stats.jumpTrajectory.Hide)
+		if (Application.isPlaying || stats == null || stats.jumpTrajectory.Hide)
 			return;
+		if (!_initialized)
+		{
+			Awake();
+		}
+
 		var settings = stats.jumpTrajectory;
 
 		Gizmos.color = settings.Color;
-		
+
 		// Physics variables
 		var timeStep = (settings.MaxLength * HUNDREDTHS_TO_SECONDS) / settings.Resolution;
 		Vector2 position = (Vector2)transform.position + origin, displacement;
 
-		_xVelocity.BaseValue = stats.MaxSpeed.BaseValue;
-		_yVelocity.BaseValue = stats.JumpSpeed.BaseValue;
+		_xVelocity.BaseValue = stats.MaxSpeed.ModifiedValue;
+		_yVelocity.BaseValue = stats.JumpSpeed.ModifiedValue;
 		stats.CalculateGravity();
-		_gravity.BaseValue = stats.Gravity.BaseValue;
+		_gravity.BaseValue = Mathf.Abs(stats.Gravity.ModifiedValue);
 
 		// stat modifiers
 		_fallingGravity.Multiplier = stats.FallingGravity.Multiplier;
-		_maxFallSpeed.Min = -stats.MaxFallSpeed.BaseValue;
-		_maxFallSpeed.Max = +stats.MaxFallSpeed.BaseValue;
+		_maxFallSpeed.Min = -stats.MaxFallSpeed.ModifiedValue;
+		_maxFallSpeed.Max = +stats.MaxFallSpeed.ModifiedValue;
 
-		_reverseDirection.Enabled = stats.jumpTrajectory.direction is JumpTrajectoryGizmoSettings.Direction.Left;
+
+		if (stats.jumpTrajectory.direction == JumpTrajectoryGizmoSettings.Direction.Left)
+		{
+			_xVelocity.BaseValue *= -1;
+		}
 		_fallingGravity.Enabled = false;
 
 		for (int i = 1; i < settings.Resolution; i++)

@@ -77,7 +77,7 @@ public class PlayerVerticalMovement : PlayerMotionController
 		}
 
 		// Handle Gravity
-		Accelerate(deltaTime, -Stats.Gravity.ModifiedValue, -Stats.MaxFallSpeed.ModifiedValue);
+		Accelerate(deltaTime, Mathf.Abs(Stats.Gravity.ModifiedValue), -Stats.MaxFallSpeed.ModifiedValue);
 
 		// Handle Ground
 		if (isGrounded)

@@ -58,6 +58,7 @@ MonoBehaviour:
     y: -1
     width: 0.5
     height: 0.2
+  _snappingRayLength: 1
   _ceilingDetectionArea:
     serializedVersion: 2
     x: -0.25
@@ -65,9 +66,12 @@ MonoBehaviour:
     width: 0.5
     height: 0.2
   _coyoteTime: 0.25
-  groundCast:
+  floorCast:
     Hide: 0
     Color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  roofCast:
+    Hide: 0
+    Color: {r: 0.6784314, g: 1, b: 0.1843137, a: 1}
   jumpTrajectory:
     Hide: 0
     Color: {r: 1, g: 1, b: 1, a: 1}

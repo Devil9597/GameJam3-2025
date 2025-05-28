@@ -101,6 +101,24 @@ public class PlayerMoveStats : ScriptableObject
 		CalculateGravity();
 	}
 
+	public void OnValidate()
+	{
+#if UNITY_EDITOR
+		UnityEditor.Undo.RecordObject(this, name);
+
+		_maxSpeed.SetDirty();
+		_acceleration.SetDirty();
+		_drag.SetDirty();
+
+		_jumpHeight.SetDirty();
+		_jumpSpeed.SetDirty();
+		_midairJumps.SetDirty();
+
+		_maxFallSpeed.SetDirty();
+		CalculateGravity();
+#endif
+	}
+
 	public void CalculateGravity()
 	{
 		float t = JumpHeight.ModifiedValue / JumpSpeed.ModifiedValue;
