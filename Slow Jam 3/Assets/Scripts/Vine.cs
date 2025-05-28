@@ -8,7 +8,7 @@ using UnityEngine.Serialization;
 using UnityEngine.Splines;
 using Random = UnityEngine.Random;
 
-public class SpriteSpawner : MonoBehaviour
+public class Vine : MonoBehaviour
 {
     [SerializeField] private float _rotationOffset;
     [SerializeField] private float _rotationRandomMin = -20;
@@ -20,13 +20,14 @@ public class SpriteSpawner : MonoBehaviour
 
     [SerializeField] private Vector2 Size = new Vector2(16, 16);
 
-    
+
     /// <summary>
     /// determines how many sprites to place over the entire spline
     /// </summary>
     [SerializeField] private int _splineResolution = 100;
 
     [SerializeField] private EdgeCollider2D _edgeCollider;
+
     /// <summary>
     /// how many collision points to place over the spline
     /// </summary>
@@ -50,6 +51,11 @@ public class SpriteSpawner : MonoBehaviour
     {
         public GameObject Sprite;
         public float Percent;
+    }
+
+    public void SetTarget(float target)
+    {
+        _target = Mathf.Clamp(target, 0, 1);
     }
 
     void Start()
@@ -143,6 +149,7 @@ public class SpriteSpawner : MonoBehaviour
     private void SetCollider()
     {
         _edgeCollider.Reset();
+        _edgeCollider.isTrigger = true;
         List<Vector2> points = new();
         for (int i = 1; i < _colliderRes + 1; i++)
         {
