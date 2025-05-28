@@ -67,20 +67,9 @@ public class Vine : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            _target = 0;
-        }
-
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            _target = 1;
-        }
-
         var step = _speed * Time.deltaTime;
         _currentProgres = Mathf.MoveTowards(_currentProgres, _target, step);
         var worldPos = _splineToFollow.EvaluatePosition(_currentProgres);
-
         SetCollider();
         if (_currentProgres < _target)
         {

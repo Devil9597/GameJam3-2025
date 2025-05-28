@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Player Stats
   m_EditorClassIdentifier: 
   _maxSpeed:
-    _baseValue: 4.49
+    _baseValue: 2.5
   _aerialMaxSpeed:
     _enabled: 0
-    _newValue: 3
+    _newValue: 2.5
   _runSpeedMult:
     _enabled: 0
     _multiplier: 2
@@ -24,24 +24,24 @@ MonoBehaviour:
     _baseValue: 50
   _aerialAcceleration:
     _enabled: 0
-    _newValue: 1
+    _newValue: 10
   _drag:
-    _baseValue: 8
+    _baseValue: 50
   _aerialDrag:
     _enabled: 0
     _newValue: 1
   _jumpHeight:
-    _baseValue: 5
+    _baseValue: 10
   _aerialJumpHeight:
-    _enabled: 0
-    _newValue: 4
+    _enabled: 1
+    _newValue: 5.57
   _jumpSpeed:
     _baseValue: 10
   _midairJumps:
     _baseValue: 0
   _jumpCancelFactor: 0.1
   _maxFallSpeed:
-    _baseValue: 20
+    _baseValue: 7.4
   _fallingGravityMult:
     _enabled: 0
     _multiplier: 2
@@ -54,16 +54,16 @@ MonoBehaviour:
   _floorDetectionArea:
     serializedVersion: 2
     x: -0.25
-    y: -1
+    y: -1.08
     width: 0.5
     height: 0.2
   _snappingRayLength: 1
   _ceilingDetectionArea:
     serializedVersion: 2
     x: -0.25
-    y: 1
+    y: 1.04
     width: 0.5
-    height: 0.2
+    height: 0.07
   _coyoteTime: 0.25
   floorCast:
     Hide: 0
