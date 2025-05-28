@@ -113,7 +113,7 @@ public class PlayerVerticalMovement : PlayerMotionController
 		bool canJump = false;
 		Manger.GetValue(PlayerGroundDetector.TR_IS_GROUNDED, out bool isGrounded);
 
-		if (isGrounded || force)
+		if (isGrounded || Stats.CoyoteTimer.IsRunning || force)
 		{
 			canJump = true;
 		}

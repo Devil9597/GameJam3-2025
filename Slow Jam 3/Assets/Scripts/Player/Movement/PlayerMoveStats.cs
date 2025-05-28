@@ -30,7 +30,7 @@ public class PlayerMoveStats : ScriptableObject
 	[Header("Ground Detection")]
 	[SerializeField] private LayerMask _groundLayer = Physics2D.DefaultRaycastLayers;
 	[SerializeField] private Rect _floorDetectionArea = new(-0.25f, -1, 0.5f, 0.2f);
-	[SerializeField] private float _snappingRayLength = 1f;
+	[SerializeField] private float _footHeight = -1f;
 	[SerializeField] private Rect _ceilingDetectionArea = new(-0.25f, 1, 0.5f, 0.2f);
 	[SerializeField] private float _coyoteTime = 0.25f;
 
@@ -82,7 +82,7 @@ public class PlayerMoveStats : ScriptableObject
 
 	public LayerMask GroundLayer { get => _groundLayer; set => _groundLayer = value; }
 	public Rect FloorDetectionArea { get => _floorDetectionArea; set => _floorDetectionArea = value; }
-	public float SnappingRayLength { get => _snappingRayLength; set => _snappingRayLength = value; }
+	public float FootHeight { get => _footHeight; set => _footHeight = value; }
 	public Rect CeilingDetectionArea { get => _ceilingDetectionArea; set => _ceilingDetectionArea = value; }
 
 	public CountdownTimer CoyoteTimer { get; private set; }
