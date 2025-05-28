@@ -72,7 +72,14 @@ namespace Utilities.Serializables
 
 		public void OnBeforeSerialize()
 		{
-			// no-op
+			var length = _underlyingValue.Count;
+			_keyValuePairs = new KeyValuePair<TKey, TValue>[length];
+
+			int i = 0;
+			foreach (var item in _underlyingValue)
+			{
+				_keyValuePairs[i++] = item;
+			}
 		}
 
 		public bool Remove(TKey key)

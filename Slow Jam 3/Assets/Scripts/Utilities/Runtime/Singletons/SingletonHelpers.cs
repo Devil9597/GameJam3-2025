@@ -29,7 +29,7 @@ namespace Utilities.Singletons
 
 		public static void LogObjectCreation<T>()
 		{
-			Debug.Log($"Created a supplementary {typeof(T)} instance as the instance property was accessed but had nothing assigned.");
+			Debug.Log($"Created a supplementary {typeof(T)} instance as the instance property was accessed but no instances existed.");
 		}
 
 		public static System.Exception ComponentConversionFailed<T>(string singletonTypeName)

@@ -56,7 +56,7 @@ namespace Utilities.Singletons
 		/// <summary>
 		/// This method is invoked after this object has been set as the <see cref="Instance"/>.
 		/// </summary>
-		protected abstract void Initialize();
+		protected virtual void Initialize() { }
 
 		public static implicit operator T(Singleton<T> singleton)
 		{
