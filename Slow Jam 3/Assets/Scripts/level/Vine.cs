@@ -85,7 +85,7 @@ public class Vine : MonoBehaviour
                     break;
                 }
 
-                if (sprite.Percent < _currentProgres)
+                if (sprite.Percent <= _currentProgres)
                 {
                     sprite.Sprite.SetActive(true);
                 }

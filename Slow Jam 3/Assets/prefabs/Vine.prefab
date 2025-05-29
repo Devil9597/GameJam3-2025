@@ -4992,9 +4992,9 @@ MonoBehaviour:
   _edgeCollider: {fileID: 2945736043797148316}
   _colliderRes: 100
   test: {fileID: 0}
-  _currentProgres: 0
-  _speed: 0.25
-  _target: 1
+  _currentProgres: 1
+  _speed: 3.41
+  _target: 0
   _sprites: []
   _growParticles: {fileID: 6109395099764539271}
 --- !u!68 &2945736043797148316

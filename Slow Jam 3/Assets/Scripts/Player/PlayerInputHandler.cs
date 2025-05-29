@@ -7,22 +7,22 @@ using static UnityEngine.InputSystem.InputAction;
 [CreateAssetMenu(fileName = "NewInputHandler", menuName = "Scriptable Objects/Player Input Handler")]
 public class PlayerInputHandler : ScriptableObject
 {
-    private InputSystem_Actions _actions;
+    public InputSystem_Actions Actions { get; private set; }
 
-    public PlayerActions Player => _actions.Player;
-    public UIActions UI => _actions.UI;
-    public ClimbActions ClimbActions => _actions.Climb;
+    public PlayerActions Player => Actions.Player;
+    public UIActions UI => Actions.UI;
+    public ClimbActions ClimbActions => Actions.Climb;
 
     public void OnEnable()
     {
-        _actions = new();
-        _actions.Enable();
+        Actions = new();
+        Actions.Enable();
     }
 
     public void OnDisable()
     {
-        _actions.Disable();
-        _actions = null;
+        Actions.Disable();
+        Actions = null;
     }
 }
 
