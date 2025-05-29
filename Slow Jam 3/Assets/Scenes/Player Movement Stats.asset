@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aaadaab50954cfe40ab0e159705e34b7, type: 3}
+  m_Script: {fileID: 11500000, guid: a23fdd878f29f52499b12e33d1115146, type: 3}
   m_Name: Player Movement Stats
   m_EditorClassIdentifier: 
   MaxWalkSpeed: 12.5
@@ -20,11 +20,11 @@ MonoBehaviour:
   MaxRunSpeed: 20
   GroundLayer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 0
   GroundDetectionRayLength: 0.02
   HeadDetectionRayLength: 0.02
   HeadWidth: 0.75
-  JumpHeight: 6.5
+  JumpHeight: 4
   JumpHeightCompensationFactor: 1.054
   TimeTillJumpApex: 0.35
   GravityOnReleaseMultiplier: 2
@@ -37,7 +37,7 @@ MonoBehaviour:
   JumpCoyoteTime: 0.1
   DebugShowIsGroundedBox: 0
   DebugShowHeadBumpBox: 0
-  SHowWalkJumpArc: 0
+  ShowWalkJumpArc: 1
   ShowRunJumpArc: 0
   StopOnCollision: 1
   DrawRight: 1
