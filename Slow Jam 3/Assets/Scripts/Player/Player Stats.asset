@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Player Stats
   m_EditorClassIdentifier: 
   _maxSpeed:
-    _baseValue: 2.5
+    _baseValue: 7.5
   _aerialMaxSpeed:
     _enabled: 0
     _newValue: 2.5
@@ -57,7 +57,7 @@ MonoBehaviour:
     y: -1.08
     width: 0.5
     height: 0.2
-  _snappingRayLength: 1
+  _footHeight: -1
   _ceilingDetectionArea:
     serializedVersion: 2
     x: -0.25
