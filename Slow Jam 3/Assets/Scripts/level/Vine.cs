@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
@@ -15,6 +16,7 @@ public class Vine : MonoBehaviour
     [SerializeField] private float _rotationRandomMax = 20;
 
 
+    [SerializeField] private PlayerInputHandler _inputHandler;
     [SerializeField] private SplineContainer _splineToFollow;
     [SerializeField] private GameObject _spritePrefab;
 
@@ -137,7 +139,7 @@ public class Vine : MonoBehaviour
 
     private void SetCollider()
     {
-        _edgeCollider.Reset();
+        _edgeCollider.SetPoints(new List<Vector2>());
         _edgeCollider.isTrigger = true;
         List<Vector2> points = new();
         for (int i = 1; i < _colliderRes + 1; i++)

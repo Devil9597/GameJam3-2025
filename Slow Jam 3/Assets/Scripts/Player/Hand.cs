@@ -23,7 +23,7 @@ public class Hand : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        _contactFilter = new ContactFilter2D() { layerMask = LayerMask.NameToLayer("Ground") };
+        _contactFilter = new ContactFilter2D() { layerMask = LayerMask.NameToLayer("Ground"), useTriggers = true};
         _activeCollider = _leftCollider;
         _leftCollider.gameObject.SetActive(true);
         _rightCollider.gameObject.SetActive(false);

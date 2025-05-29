@@ -853,6 +853,78 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Climb"",
+            ""id"": ""6329fb4d-b459-418b-a3ec-0cafb35de7fc"",
+            ""actions"": [
+                {
+                    ""name"": ""ClimbDirection"",
+                    ""type"": ""Value"",
+                    ""id"": ""37ece393-1238-47ce-9902-394e98c730e7"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""726457bb-efdb-4191-afbe-71bebe372464"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClimbDirection"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""1d41cd47-41ba-46f6-917f-204247be3e96"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""ClimbDirection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""676ef3f8-6c05-444d-90ee-4fb95266f708"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""ClimbDirection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""5acc5506-2c1f-4d5c-a13a-8fc0909809b5"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""ClimbDirection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""667c9a70-048f-4a03-9fc1-556a94aeb27a"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""ClimbDirection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -937,12 +1009,16 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_UI_ScrollWheel = m_UI.FindAction("ScrollWheel", throwIfNotFound: true);
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
+        // Climb
+        m_Climb = asset.FindActionMap("Climb", throwIfNotFound: true);
+        m_Climb_ClimbDirection = m_Climb.FindAction("ClimbDirection", throwIfNotFound: true);
     }
 
     ~@InputSystem_Actions()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, InputSystem_Actions.Player.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, InputSystem_Actions.UI.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Climb.enabled, "This will cause a leak and performance issues, InputSystem_Actions.Climb.Disable() has not been called.");
     }
 
     /// <summary>
@@ -1349,6 +1425,102 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="UIActions" /> instance referencing this action map.
     /// </summary>
     public UIActions @UI => new UIActions(this);
+
+    // Climb
+    private readonly InputActionMap m_Climb;
+    private List<IClimbActions> m_ClimbActionsCallbackInterfaces = new List<IClimbActions>();
+    private readonly InputAction m_Climb_ClimbDirection;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Climb".
+    /// </summary>
+    public struct ClimbActions
+    {
+        private @InputSystem_Actions m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public ClimbActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Climb/ClimbDirection".
+        /// </summary>
+        public InputAction @ClimbDirection => m_Wrapper.m_Climb_ClimbDirection;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Climb; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="ClimbActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(ClimbActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="ClimbActions" />
+        public void AddCallbacks(IClimbActions instance)
+        {
+            if (instance == null || m_Wrapper.m_ClimbActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ClimbActionsCallbackInterfaces.Add(instance);
+            @ClimbDirection.started += instance.OnClimbDirection;
+            @ClimbDirection.performed += instance.OnClimbDirection;
+            @ClimbDirection.canceled += instance.OnClimbDirection;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="ClimbActions" />
+        private void UnregisterCallbacks(IClimbActions instance)
+        {
+            @ClimbDirection.started -= instance.OnClimbDirection;
+            @ClimbDirection.performed -= instance.OnClimbDirection;
+            @ClimbDirection.canceled -= instance.OnClimbDirection;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ClimbActions.UnregisterCallbacks(IClimbActions)" />.
+        /// </summary>
+        /// <seealso cref="ClimbActions.UnregisterCallbacks(IClimbActions)" />
+        public void RemoveCallbacks(IClimbActions instance)
+        {
+            if (m_Wrapper.m_ClimbActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="ClimbActions.AddCallbacks(IClimbActions)" />
+        /// <seealso cref="ClimbActions.RemoveCallbacks(IClimbActions)" />
+        /// <seealso cref="ClimbActions.UnregisterCallbacks(IClimbActions)" />
+        public void SetCallbacks(IClimbActions instance)
+        {
+            foreach (var item in m_Wrapper.m_ClimbActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_ClimbActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="ClimbActions" /> instance referencing this action map.
+    /// </summary>
+    public ClimbActions @Climb => new ClimbActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -1534,5 +1706,20 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Climb" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="ClimbActions.AddCallbacks(IClimbActions)" />
+    /// <seealso cref="ClimbActions.RemoveCallbacks(IClimbActions)" />
+    public interface IClimbActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "ClimbDirection" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnClimbDirection(InputAction.CallbackContext context);
     }
 }
