@@ -10,6 +10,7 @@ public class Hand : MonoBehaviour
     [SerializeField] private Collider2D _leftCollider;
     [SerializeField] private Collider2D _rightCollider;
     [SerializeField] private float _force = 10;
+    [SerializeField] private PlayerMoveStats _playerMoveStats;
 
     [SerializeField] private StatMultiplier _grabSpeedMulti;
 
@@ -35,6 +36,7 @@ public class Hand : MonoBehaviour
     {
         if (isGrabing)
         {
+            _playerMoveStats.MaxSpeed.RemoveModifier(_grabSpeedMulti);
             _target = null;
             isGrabing = false;
             return;
@@ -60,6 +62,7 @@ public class Hand : MonoBehaviour
             return;
         }
 
+        _playerMoveStats.MaxSpeed.AddModifier(_grabSpeedMulti);
         isGrabing = true;
     }
 

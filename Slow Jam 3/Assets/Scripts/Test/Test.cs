@@ -33,18 +33,13 @@ public class Test : MonoBehaviour
 
     [SerializeField, Header("Visuals")] private ParticleSystem _jumpParticlySystem;
 
-    [SerializeField, Header("Collision")] private float _groundSnapDistance = 0.5f;
-    [SerializeField] private LayerMask _groundSnapLayerMask;
-    [SerializeField] private int _groundContactCount;
-
 
     private float _targetJump;
     private Vector2 _dashDirection;
     private int _currentDashCount;
     private int _currentJumpCount;
     private float _dashEndTime;
-    private int _stepsSinceLastJump;
-    private int _stepsSinceGroundContact;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -57,14 +52,12 @@ public class Test : MonoBehaviour
         {
             if (_isGrounded)
             {
-                _useGravity = true;
                 _targetJump = _jumpHeight;
                 _jumpParticlySystem.Emit(10);
             }
 
             if (_isGrounded is false && _currentJumpCount > 0)
             {
-                _useGravity = true;
                 _jumpParticlySystem.Emit(10);
                 _currentJumpCount--;
                 _targetJump = _jumpHeight;
@@ -73,11 +66,6 @@ public class Test : MonoBehaviour
 
         void OnDash(InputAction.CallbackContext obj)
         {
-            if (_isGrounded)
-            {
-                return;
-            }
-
             if (_currentDashCount == 0)
             {
                 return;
@@ -98,13 +86,10 @@ public class Test : MonoBehaviour
     {
         _currentDashCount = _totalDashes;
         _currentJumpCount = _extraJumps;
-        _useGravity = false;
-        _stepsSinceGroundContact = 0;
     }
 
 
-    private HashSet<Collider2D> _groundContacts = new();
-
+    private List<Collider2D> _groundContacts = new();
 
     private void OnCollisionEnter2D(Collision2D other)
     {
@@ -113,7 +98,9 @@ public class Test : MonoBehaviour
 
         for (int i = 0; i < count; i++)
         {
-            if (IsNormalGround(contacts[i].normal))
+            var angle = Vector2.Angle(Vector2.up, contacts[i].normal);
+
+            if (angle < _maxGroundAngle)
             {
                 if (_groundContacts.Count == 0)
                 {
@@ -122,7 +109,6 @@ public class Test : MonoBehaviour
                 }
 
                 _groundContacts.Add(other.collider);
-                _groundContactCount++;
                 _isGrounded = true;
             }
         }
@@ -134,20 +120,7 @@ public class Test : MonoBehaviour
         if (_groundContacts.Count == 0)
         {
             _isGrounded = false;
-            _useGravity = true;
         }
-    }
-
-    private bool IsNormalGround(Vector2 normal)
-    {
-        var angle = Vector2.Angle(Vector2.up, normal);
-
-        if (angle < _maxGroundAngle)
-        {
-            return true;
-        }
-
-        return false;
     }
 
     private void FixedUpdate()
@@ -155,10 +128,7 @@ public class Test : MonoBehaviour
         var movement = _input.Player.Move.ReadValue<float>();
         var velocity = _rigidbody.linearVelocity;
         var groundTarget = movement * _maxSpeed;
-        var airTarget = movement * _maxAirSpeed;
-        Ray ray = new Ray(transform.position, Vector3.down);
-        Debug.DrawLine(ray.origin, ray.origin + ray.direction.normalized * _groundSnapDistance, Color.pink);
-
+        var airTarget = movement * _maxSpeed;
 
         if (Time.time >= _dashEndTime)
         {
@@ -185,7 +155,6 @@ public class Test : MonoBehaviour
         if (_targetJump != 0)
         {
             velocity.y = Mathf.Sqrt(-1f * _gravity * _targetJump);
-            _stepsSinceLastJump = 0;
         }
 
         if (_dashDirection.magnitude != 0)
@@ -193,27 +162,6 @@ public class Test : MonoBehaviour
             velocity = _dashDirection * _dashSpeed;
         }
 
-
-        if (_stepsSinceLastJump > 1 && _isGrounded)
-        {
-            var hit = Physics2D.Raycast(transform.position, Vector2.down, _groundSnapDistance, _groundSnapLayerMask);
-            if (hit.collider is not null)
-            {
-                if (IsNormalGround(hit.normal))
-                {
-                    Debug.DrawLine(transform.position, transform.position + (Vector3)velocity, Color.red);
-                    float dot = Vector2.Dot(velocity, hit.normal);
-                    if (dot > 0)
-                    {
-                        velocity = (velocity - hit.normal * dot).normalized * velocity.magnitude;
-                    }
-
-                    Debug.DrawLine(transform.position, transform.position + (Vector3)velocity, Color.blue);
-                }
-            }
-        }
-
-        // apply gravity last
         if (_useGravity && _isDashing is false)
         {
             velocity.y += _gravity * Time.deltaTime;
@@ -224,9 +172,5 @@ public class Test : MonoBehaviour
 
         _dashDirection = Vector2.zero;
         _targetJump = 0;
-        _stepsSinceLastJump++;
-        _stepsSinceGroundContact++;
-
-        // reset is grounded in on stay/enter?
     }
 }
