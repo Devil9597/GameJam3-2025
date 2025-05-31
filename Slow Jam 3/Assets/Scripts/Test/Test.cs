@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
@@ -49,6 +50,8 @@ public class Test : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        Assert.AreEqual(gameObject.layer, LayerMask.NameToLayer("Player"));
+
         _rigidbody = GetComponent<Rigidbody2D>();
         _input.Player.Dash.performed += OnDash;
         _input.Player.Jump.performed += OnJump;
