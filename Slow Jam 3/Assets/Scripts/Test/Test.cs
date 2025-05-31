@@ -32,7 +32,10 @@ public class Test : MonoBehaviour
     [SerializeField] private bool _isDashing;
     [SerializeField] private bool _isGrounded = false;
 
-    [SerializeField, Header("Visuals")] private ParticleSystem _jumpParticlySystem;
+    [FormerlySerializedAs("_jumpParticlySystem")] [SerializeField, Header("Visuals")]
+    private ParticleSystem _jumpParticleSystem;
+
+    [SerializeField] private ParticleSystem _dashParticleSystem;
 
     [SerializeField, Header("Collision")] private float _groundSnapDistance = 0.5f;
     [SerializeField] private LayerMask _groundSnapLayerMask;
@@ -62,13 +65,20 @@ public class Test : MonoBehaviour
             {
                 _useGravity = true;
                 _targetJump = _jumpHeight;
-                _jumpParticlySystem.Emit(10);
+                if (_jumpParticleSystem != null)
+                {
+                    _jumpParticleSystem.Emit(10);
+                }
             }
 
             if (_isGrounded is false && _currentJumpCount > 0)
             {
                 _useGravity = true;
-                _jumpParticlySystem.Emit(10);
+                if (_jumpParticleSystem != null)
+                {
+                    _jumpParticleSystem.Emit(10);
+                }
+
                 _currentJumpCount--;
                 _targetJump = _jumpHeight;
             }
@@ -88,6 +98,11 @@ public class Test : MonoBehaviour
 
             _currentDashCount--;
 
+            if (_dashParticleSystem != null)
+            {
+                _dashParticleSystem.Play();
+            }
+
             _isDashing = true;
             _dashEndTime = Time.time + _dashTime;
 
@@ -103,6 +118,14 @@ public class Test : MonoBehaviour
         _currentJumpCount = _extraJumps;
         _useGravity = false;
         _stepsSinceGroundContact = 0;
+    }
+
+    private void OnDashEnd()
+    {
+        if (_dashParticleSystem != null)
+        {
+            _dashParticleSystem.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        }
     }
 
 
@@ -165,7 +188,9 @@ public class Test : MonoBehaviour
 
         if (Time.time >= _dashEndTime)
         {
+            // dash has ended
             _isDashing = false;
+            OnDashEnd();
         }
 
         if (_isGrounded)
