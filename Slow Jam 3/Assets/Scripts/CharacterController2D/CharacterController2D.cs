@@ -284,14 +284,18 @@ public class CharacterController2D : MonoBehaviour
         if (_stepsSinceLastJump > 1 && _isGrounded)
         {
             var hit = Physics2D.Raycast(transform.position, Vector2.down, _groundSnapDistance, _groundSnapLayerMask);
+
             if (hit.collider is not null)
             {
                 if (IsNormalGround(hit.normal))
                 {
                     float dot = Vector2.Dot(velocity, hit.normal);
-                    if (dot > 0)
+
+                    // if (dot > 0)
                     {
                         velocity = (velocity - hit.normal * dot).normalized * velocity.magnitude;
+
+                        Debug.DrawLine(transform.position, transform.position + (Vector3)velocity, Color.red);
                     }
                 }
             }

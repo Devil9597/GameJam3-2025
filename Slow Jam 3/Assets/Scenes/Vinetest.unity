@@ -6346,21 +6346,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2945736043797148316, guid: 723ef1cf5ba3e6a41af1de51634fed0b, type: 3}
+      propertyPath: m_ContactCaptureLayers.m_Bits
+      value: 65
+      objectReference: {fileID: 0}
     - target: {fileID: 5602494930941733763, guid: 723ef1cf5ba3e6a41af1de51634fed0b, type: 3}
       propertyPath: m_Name
       value: Vine
-      objectReference: {fileID: 0}
-    - target: {fileID: 6192588304290691351, guid: 723ef1cf5ba3e6a41af1de51634fed0b, type: 3}
-      propertyPath: _targetMax
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6192588304290691351, guid: 723ef1cf5ba3e6a41af1de51634fed0b, type: 3}
-      propertyPath: _targetMin
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6192588304290691351, guid: 723ef1cf5ba3e6a41af1de51634fed0b, type: 3}
-      propertyPath: _currentMax
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9071541939627983144, guid: 723ef1cf5ba3e6a41af1de51634fed0b, type: 3}
       propertyPath: m_LocalPosition.x
