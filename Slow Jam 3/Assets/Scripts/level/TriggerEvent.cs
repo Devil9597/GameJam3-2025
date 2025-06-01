@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 
 public class TriggerEvent : MonoBehaviour
 {
-    [SerializeField] private string _targetTag;
+    [SerializeField] private string _targetTag = "Player";
     [SerializeField] private UnityEvent<GameObject> _onEnter;
     [SerializeField] private UnityEvent<GameObject> _onStay;
     [SerializeField] private UnityEvent<GameObject> _onExit;
