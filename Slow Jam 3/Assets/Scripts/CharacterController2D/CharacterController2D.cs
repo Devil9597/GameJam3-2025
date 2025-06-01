@@ -141,7 +141,6 @@ public class CharacterController2D : MonoBehaviour
 
     private void GroundTouch()
     {
-        Debug.Log("first ground touch");
         _currentDashCount = _totalDashes;
         _currentJumpCount = _extraJumps;
         _useGravity = false;
@@ -216,6 +215,9 @@ public class CharacterController2D : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D other)
     {
+        _isGrounded = false;
+        _useGravity = true;
+
         var contacts = new ContactPoint2D[10];
         var count = other.GetContacts(contacts);
 
@@ -223,14 +225,29 @@ public class CharacterController2D : MonoBehaviour
         {
             if (IsNormalGround(contacts[i].normal))
             {
+                if (_showDebugLines)
+                {
+                    Debug.DrawLine(contacts[i].point, contacts[i].point + contacts[i].normal, Color.green, 0.5f);
+                }
+
+
                 _isGrounded = true;
                 _useGravity = false;
+            }
+
+            else
+            {
+                if (_showDebugLines)
+                {
+                    Debug.DrawLine(contacts[i].point, contacts[i].point + contacts[i].normal, Color.purple, 0.5f);
+                }
             }
         }
     }
 
     private void OnCollisionExit2D(Collision2D other)
     {
+        // Debug.Log($"On Exit: {other.collider.name}");
         // since we are evaluating on stay setting this to false every exit should be fine?
         _isGrounded = false;
         _useGravity = true;
@@ -352,6 +369,7 @@ public class CharacterController2D : MonoBehaviour
         {
             Debug.DrawLine(transform.position, transform.position + (Vector3)velocity, Color.red);
         }
+
 
         _rigidbody.linearVelocity = velocity;
 
