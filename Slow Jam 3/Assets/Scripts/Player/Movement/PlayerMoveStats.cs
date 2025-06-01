@@ -36,7 +36,6 @@ public class PlayerMoveStats : ScriptableObject
     [SerializeField] private float _coyoteTime = 0.25f;
 
 
-#if UNITY_EDITOR
     [Header("Debug Settings")] public GroundCastGizmoSettings floorCast = new()
     {
         Color = Color.yellow
@@ -54,7 +53,6 @@ public class PlayerMoveStats : ScriptableObject
         Resolution = 20
     };
 
-#endif
 
     #region Public Properties
 
