@@ -75,7 +75,6 @@ public class Vine : MonoBehaviour
         _currentMin = Mathf.MoveTowards(_currentMin, _targetMin, _speed * Time.deltaTime);
         _currentMax = Mathf.MoveTowards(_currentMax, _targetMax, _speed * Time.deltaTime);
 
-        print($"{_currentMin},{_currentMax}");
 
         if (Input.GetKeyDown(KeyCode.Q))
         {

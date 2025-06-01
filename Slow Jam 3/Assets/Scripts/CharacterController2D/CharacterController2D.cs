@@ -21,6 +21,10 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private float _dashSpeed = 10;
     [SerializeField] private bool _useGravity = true;
 
+    [SerializeField] private float _climbAccel = 50;
+    [SerializeField] private float _maxClimbSpeed = 5;
+
+
     /// <summary>
     /// the time to wait before applying gravity again
     /// </summary>
@@ -42,6 +46,10 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private int _groundContactCount;
 
 
+    // TODO: if we need more movement states comeback and do some statey like machine or some component based approach to seperarate
+    [SerializeField] private bool _isClimbing = false;
+    private float _climbDirection = 0;
+
     private float _targetJump;
     private Vector2 _dashDirection;
     private int _currentDashCount;
@@ -58,6 +66,18 @@ public class CharacterController2D : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody2D>();
         _input.Player.Dash.performed += OnDash;
         _input.Player.Jump.performed += OnJump;
+        _input.Player.Climb.performed += OnClimb;
+        _input.Player.Climb.canceled += OnClimbCanceled;
+
+        void OnClimbCanceled(InputAction.CallbackContext obj)
+        {
+            _climbDirection = 0;
+        }
+
+        void OnClimb(InputAction.CallbackContext obj)
+        {
+            _climbDirection = obj.ReadValue<float>();
+        }
 
         void OnJump(InputAction.CallbackContext obj)
         {
@@ -112,6 +132,11 @@ public class CharacterController2D : MonoBehaviour
     }
 
 
+    private void OnFirstClimb()
+    {
+        _rigidbody.linearVelocity = Vector2.zero;
+    }
+
     private void OnFirstGroundTouch()
     {
         _currentDashCount = _totalDashes;
@@ -130,7 +155,40 @@ public class CharacterController2D : MonoBehaviour
 
 
     private HashSet<Collider2D> _groundContacts = new();
+    private HashSet<Vine> _vineContacts = new();
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        var vine = other.gameObject.GetComponent<Vine>();
+        if (vine is not null)
+        {
+            if (_vineContacts.Count == 0)
+            {
+                OnFirstClimb();
+            }
+
+            _vineContacts.Add(vine);
+            _isClimbing = true;
+            _useGravity = false;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        var vine = other.gameObject.GetComponent<Vine>();
+        if (vine is not null)
+        {
+            _vineContacts.Remove(vine);
+            if (_vineContacts.Count == 0)
+            {
+                _isClimbing = false;
+                if (_isGrounded is false)
+                {
+                    _useGravity = true;
+                }
+            }
+        }
+    }
 
     private void OnCollisionEnter2D(Collision2D other)
     {
@@ -182,6 +240,7 @@ public class CharacterController2D : MonoBehaviour
         var velocity = _rigidbody.linearVelocity;
         var groundTarget = movement * _maxSpeed;
         var airTarget = movement * _maxAirSpeed;
+        var climbTarget = _climbDirection * _maxClimbSpeed;
         Ray ray = new Ray(transform.position, Vector3.down);
         Debug.DrawLine(ray.origin, ray.origin + ray.direction.normalized * _groundSnapDistance, Color.pink);
 
@@ -229,22 +288,25 @@ public class CharacterController2D : MonoBehaviour
             {
                 if (IsNormalGround(hit.normal))
                 {
-                    Debug.DrawLine(transform.position, transform.position + (Vector3)velocity, Color.red);
                     float dot = Vector2.Dot(velocity, hit.normal);
                     if (dot > 0)
                     {
                         velocity = (velocity - hit.normal * dot).normalized * velocity.magnitude;
                     }
-
-                    Debug.DrawLine(transform.position, transform.position + (Vector3)velocity, Color.blue);
                 }
             }
         }
 
         // apply gravity last
-        if (_useGravity && _isDashing is false)
+        if (_useGravity && _isDashing is false && _isClimbing is false)
         {
             velocity.y += _gravity * Time.deltaTime;
+        }
+
+        if (_isClimbing)
+        {
+            velocity.y = Mathf.MoveTowards(velocity.y, climbTarget, _groundAccel * Time.deltaTime);
+            Debug.Log(velocity.y);
         }
 
 

@@ -9827,9 +9827,9 @@ MonoBehaviour:
   _currentProgres: 1
   _speed: 3.41
   _targetMin: 0
-  _targetMax: 0
+  _targetMax: 1
   _currentMin: 0
-  _currentMax: 1
+  _currentMax: 0
   _sprites: []
   _growParticlesMin: {fileID: 6109395099764539271}
   _growParticlesMax: {fileID: 2502212956487906319}
