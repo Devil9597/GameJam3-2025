@@ -16,11 +16,9 @@ public sealed class Respawnable : MonoBehaviour, IRespawnable
 	[Tooltip("Event is invoked just before respawning.")]
 	[SerializeField] private UnityEvent<int> _onRespawn;
 
-#if UNITY_EDITOR
 	[Header("Debug Settings")]
 	[SerializeField] private Color _gizmoColor = Color.white;
 	[SerializeField] private RespawnableHelpers.ShowGizmoMode _showConnections = RespawnableHelpers.ShowGizmoMode.Selected;
-#endif
 
 	/// <summary>
 	/// Event is invoked just before moving to a spawn point.
@@ -84,7 +82,6 @@ public sealed class Respawnable : MonoBehaviour, IRespawnable
 		return hasSpawnPoint;
 	}
 
-#if UNITY_EDITOR
 	private void OnDrawGizmos()
 	{
 		if (_showConnections is not RespawnableHelpers.ShowGizmoMode.Always)
@@ -113,14 +110,11 @@ public sealed class Respawnable : MonoBehaviour, IRespawnable
 			}
 		}
 	}
-#endif
 }
 
 public static class RespawnableHelpers
 {
-#if UNITY_EDITOR
 	public enum ShowGizmoMode { Hidden, Selected, Always }
-#endif
 
 	public static bool ContainsIndex<T>(this IList<T> array, int index)
 	{
