@@ -7,7 +7,7 @@ using Utilities.Serializables;
 /// <summary>
 /// Objects with this script attached are <see cref="Respawnable"/> and can be moved any of the specified positions by calling the <see cref="Respawn(int)"/> method.
 /// </summary>
-public sealed class Respawnable : MonoBehaviour
+public sealed class Respawnable : MonoBehaviour, IRespawnable
 {
 	[Tooltip("Will this object be respawned when the game starts?")]
 	[SerializeField] private bool _respawnOnStart = true;
