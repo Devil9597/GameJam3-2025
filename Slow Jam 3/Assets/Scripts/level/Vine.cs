@@ -89,8 +89,12 @@ public class Vine : MonoBehaviour
         }
     }
 
-
-    // be normal and make it an overload when you sober up
+    public void SetTarget(float min, float max)
+    {
+        _targetMin = min;
+        _targetMax = max;
+    }
+// be normal and make it an overload when you sober up
 
 
     [ContextMenu("Update Vine")]
