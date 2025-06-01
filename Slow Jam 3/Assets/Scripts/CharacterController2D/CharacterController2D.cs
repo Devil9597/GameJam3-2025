@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
@@ -21,6 +22,10 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private float _dashSpeed = 10;
     [SerializeField] private bool _useGravity = true;
 
+    [SerializeField] private float _climbAccel = 50;
+    [SerializeField] private float _maxClimbSpeed = 5;
+
+
     /// <summary>
     /// the time to wait before applying gravity again
     /// </summary>
@@ -41,6 +46,12 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private LayerMask _groundSnapLayerMask;
     [SerializeField] private int _groundContactCount;
 
+    [SerializeField, Header("Debug")] private bool _showDebugLines = false;
+
+
+    // TODO: if we need more movement states comeback and do some statey like machine or some component based approach to seperarate
+    [SerializeField] private bool _isClimbing = false;
+    private float _climbDirection = 0;
 
     private float _targetJump;
     private Vector2 _dashDirection;
@@ -58,6 +69,18 @@ public class CharacterController2D : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody2D>();
         _input.Player.Dash.performed += OnDash;
         _input.Player.Jump.performed += OnJump;
+        _input.Player.Climb.performed += OnClimb;
+        _input.Player.Climb.canceled += OnClimbCanceled;
+
+        void OnClimbCanceled(InputAction.CallbackContext obj)
+        {
+            _climbDirection = 0;
+        }
+
+        void OnClimb(InputAction.CallbackContext obj)
+        {
+            _climbDirection = obj.ReadValue<float>();
+        }
 
         void OnJump(InputAction.CallbackContext obj)
         {
@@ -107,13 +130,18 @@ public class CharacterController2D : MonoBehaviour
             _dashEndTime = Time.time + _dashTime;
 
             _dashDirection = _input.Player.LeftStickDirection.ReadValue<Vector2>();
-            Debug.Log(_dashDirection);
         }
     }
 
 
-    private void OnFirstGroundTouch()
+    private void OnFirstClimb()
     {
+        _rigidbody.linearVelocity = Vector2.zero;
+    }
+
+    private void GroundTouch()
+    {
+        Debug.Log("first ground touch");
         _currentDashCount = _totalDashes;
         _currentJumpCount = _extraJumps;
         _useGravity = false;
@@ -129,8 +157,43 @@ public class CharacterController2D : MonoBehaviour
     }
 
 
-    private HashSet<Collider2D> _groundContacts = new();
+    // dont do this, it breaks when using a single collider.
+    //private HashSet<Collider2D> _groundContacts = new();
+    private HashSet<Vine> _vineContacts = new();
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        var vine = other.gameObject.GetComponent<Vine>();
+        if (vine is not null)
+        {
+            if (_groundContactCount == 0)
+            {
+                OnFirstClimb();
+            }
+
+            _groundContactCount++;
+            _isClimbing = true;
+            _useGravity = false;
+        }
+    }
+
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        var vine = other.gameObject.GetComponent<Vine>();
+        if (vine is not null)
+        {
+            _vineContacts.Remove(vine);
+            if (_vineContacts.Count == 0)
+            {
+                _isClimbing = false;
+                if (_isGrounded is false)
+                {
+                    _useGravity = true;
+                }
+            }
+        }
+    }
 
     private void OnCollisionEnter2D(Collision2D other)
     {
@@ -141,28 +204,57 @@ public class CharacterController2D : MonoBehaviour
         {
             if (IsNormalGround(contacts[i].normal))
             {
-                if (_groundContacts.Count == 0)
+                // if (_groundContactCount == 0)
                 {
-                    //we just touched the ground 
-                    OnFirstGroundTouch();
+                    GroundTouch();
                 }
 
-                _groundContacts.Add(other.collider);
-                _groundContactCount++;
                 _isGrounded = true;
+            }
+        }
+    }
+
+    private void OnCollisionStay2D(Collision2D other)
+    {
+        var contacts = new ContactPoint2D[10];
+        var count = other.GetContacts(contacts);
+
+        for (int i = 0; i < count; i++)
+        {
+            if (IsNormalGround(contacts[i].normal))
+            {
+                _isGrounded = true;
+                _useGravity = false;
             }
         }
     }
 
     private void OnCollisionExit2D(Collision2D other)
     {
-        _groundContacts.Remove(other.collider);
-        if (_groundContacts.Count == 0)
+        // since we are evaluating on stay setting this to false every exit should be fine?
+        _isGrounded = false;
+        _useGravity = true;
+    }
+
+    /*private void OnCollisionExit2D(Collision2D other)
+    {
+        var contacts = new ContactPoint2D[10];
+        var count = other.GetContacts(contacts);
+
+        for (int i = 0; i < count; i++)
         {
-            _isGrounded = false;
-            _useGravity = true;
+            if (IsNormalGround(contacts[i].normal))
+            {
+                _groundContactCount--;
+                if (_groundContactCount == 0)
+                {
+                    _isGrounded = false;
+                    _useGravity = true;
+                }
+            }
         }
     }
+    */
 
     private bool IsNormalGround(Vector2 normal)
     {
@@ -182,8 +274,12 @@ public class CharacterController2D : MonoBehaviour
         var velocity = _rigidbody.linearVelocity;
         var groundTarget = movement * _maxSpeed;
         var airTarget = movement * _maxAirSpeed;
+        var climbTarget = _climbDirection * _maxClimbSpeed;
         Ray ray = new Ray(transform.position, Vector3.down);
-        Debug.DrawLine(ray.origin, ray.origin + ray.direction.normalized * _groundSnapDistance, Color.pink);
+        if (_showDebugLines)
+        {
+            Debug.DrawLine(ray.origin, ray.origin + ray.direction.normalized * _groundSnapDistance, Color.red);
+        }
 
 
         if (Time.time >= _dashEndTime)
@@ -225,28 +321,37 @@ public class CharacterController2D : MonoBehaviour
         if (_stepsSinceLastJump > 1 && _isGrounded)
         {
             var hit = Physics2D.Raycast(transform.position, Vector2.down, _groundSnapDistance, _groundSnapLayerMask);
+
             if (hit.collider is not null)
             {
                 if (IsNormalGround(hit.normal))
                 {
-                    Debug.DrawLine(transform.position, transform.position + (Vector3)velocity, Color.red);
                     float dot = Vector2.Dot(velocity, hit.normal);
-                    if (dot > 0)
+
+                    // if (dot > 0)
                     {
                         velocity = (velocity - hit.normal * dot).normalized * velocity.magnitude;
+                        velocity = Vector2.ClampMagnitude(velocity, _maxClimbSpeed);
                     }
-
-                    Debug.DrawLine(transform.position, transform.position + (Vector3)velocity, Color.blue);
                 }
             }
         }
 
         // apply gravity last
-        if (_useGravity && _isDashing is false)
+        if (_useGravity && _isDashing is false && _isClimbing is false)
         {
             velocity.y += _gravity * Time.deltaTime;
         }
 
+        if (_isClimbing)
+        {
+            velocity.y = Mathf.MoveTowards(velocity.y, climbTarget, _groundAccel * Time.deltaTime);
+        }
+
+        if (_showDebugLines)
+        {
+            Debug.DrawLine(transform.position, transform.position + (Vector3)velocity, Color.red);
+        }
 
         _rigidbody.linearVelocity = velocity;
 
@@ -256,5 +361,10 @@ public class CharacterController2D : MonoBehaviour
         _stepsSinceGroundContact++;
 
         // reset is grounded in on stay/enter?
+    }
+
+    private void OnDrawGizmos()
+    {
+        Handles.Label(transform.position + Vector3.up * 5, $"Ground Contacts:{_groundContactCount}");
     }
 }
