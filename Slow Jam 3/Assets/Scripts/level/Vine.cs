@@ -20,8 +20,6 @@ public class Vine : MonoBehaviour
     [SerializeField] private SplineContainer _splineToFollow;
     [SerializeField] private GameObject _spritePrefab;
 
-    [SerializeField] private Vector2 Size = new Vector2(16, 16);
-
 
     /// <summary>
     /// determines how many sprites to place over the entire spline
@@ -36,16 +34,22 @@ public class Vine : MonoBehaviour
     [SerializeField] private int _colliderRes = 100;
 
 
-    [SerializeField] private Transform test;
-
     [SerializeField] private float _currentProgres = 0;
     [SerializeField] private float _speed = 1;
-    [SerializeField, Range(0, 1)] private float _target = 0.5f;
+    [SerializeField, Range(0, 1)] private float _targetMin = 0.25f;
+    [SerializeField, Range(0, 1)] private float _targetMax = 0.75f;
+
+    [SerializeField] private float _currentMin;
+
+    [FormerlySerializedAs("_currnetMax")] [SerializeField]
+    private float _currentMax;
 
     [SerializeField] private List<SpriteVisuals> _sprites = new();
+    [SerializeField] private List<(Vector2 worldPos, float percent)> _colliderPoints = new();
 
-    [FormerlySerializedAs("_particleSystem")] [SerializeField]
-    private ParticleSystem _growParticles;
+    [SerializeField] private ParticleSystem _growParticlesMin;
+
+    [SerializeField] private ParticleSystem _growParticlesMax;
 
 
     [Serializable]
@@ -55,71 +59,35 @@ public class Vine : MonoBehaviour
         public float Percent;
     }
 
-    public void SetTarget(float target)
-    {
-        _target = Mathf.Clamp(target, 0, 1);
-    }
 
     void Start()
     {
         SegmentSpline();
-        SetCollider();
+        SegmentCollider();
     }
 
+    private bool vineChanged = false;
 
-    private void Update()
+    private void FixedUpdate()
     {
-        var step = _speed * Time.deltaTime;
-        _currentProgres = Mathf.MoveTowards(_currentProgres, _target, step);
-        var worldPos = _splineToFollow.EvaluatePosition(_currentProgres);
-        SetCollider();
-        if (_currentProgres < _target)
+        var lastMin = _currentMin;
+        var lastMax = _currentMax;
+        _currentMin = Mathf.MoveTowards(_currentMin, _targetMin, _speed * Time.deltaTime);
+        _currentMax = Mathf.MoveTowards(_currentMax, _targetMax, _speed * Time.deltaTime);
+
+        print($"{_currentMin},{_currentMax}");
+
+        if (Input.GetKeyDown(KeyCode.Q))
         {
-            // moving forward
-            for (int i = 0; i < _sprites.Count; i++)
-            {
-                var sprite = _sprites[i];
-                if (sprite.Percent > _currentProgres)
-                {
-                    // reached end of out current progress
-                    break;
-                }
-
-                if (sprite.Percent <= _currentProgres)
-                {
-                    sprite.Sprite.SetActive(true);
-                }
-            }
-        }
-
-        if (_currentProgres > _target)
-        {
-            // moving backward
-            for (int i = _sprites.Count - 1; i >= 0; i--)
-            {
-                var sprite = _sprites[i];
-
-                if (sprite.Percent < _currentProgres)
-                {
-                    //reached end of current prog
-                    break;
-                }
-
-                if (sprite.Percent > _currentProgres)
-                {
-                    sprite.Sprite.SetActive(false);
-                }
-                else
-                {
-                    // breaking early here should be ok since any sprites after this will always be active 
-                    // assuming the order isnt broken
-                    break;
-                }
-            }
+            _targetMax = Random.Range(0f, 1f);
+            _targetMin = Random.Range(0f, 1f);
         }
 
 
-        _growParticles.transform.position = worldPos;
+        if (!Mathf.Approximately(lastMax, _currentMax) || !Mathf.Approximately(lastMin, _currentMin))
+        {
+            UpdateVine();
+        }
     }
 
 
@@ -127,38 +95,52 @@ public class Vine : MonoBehaviour
 
 
     [ContextMenu("Update Vine")]
-    private void DrawToPercent()
+    private void UpdateVine()
     {
         if (Application.isPlaying)
         {
-            foreach (var s in _sprites)
+            var colliderInRange = _colliderPoints.Where(p => p.percent > _currentMin && p.percent < _currentMax)
+                .Select(p => p.worldPos).ToList();
+
+
+            if (colliderInRange.Count <= 1)
             {
+                _edgeCollider.SetPoints(new List<Vector2>() { Vector2.zero, Vector2.zero });
+            }
+            else
+            {
+                _edgeCollider.SetPoints(colliderInRange);
+            }
+
+
+            var visualInRange = _sprites.Where(p => p.Percent > _currentMin && p.Percent < _currentMax);
+            var spriteVisualsEnumerable = visualInRange.ToList();
+            var visualOutOfRange = _sprites.Except(spriteVisualsEnumerable);
+
+            foreach (var visible in spriteVisualsEnumerable)
+            {
+                visible.Sprite.SetActive(true);
+            }
+
+            foreach (var notVisible in visualOutOfRange)
+            {
+                notVisible.Sprite.SetActive(false);
             }
         }
     }
 
-    private void SetCollider()
+    private void SegmentCollider()
     {
-        _edgeCollider.SetPoints(new List<Vector2>());
-        _edgeCollider.isTrigger = true;
-        List<Vector2> points = new();
+        _colliderPoints.Clear();
         for (int i = 1; i < _colliderRes + 1; i++)
         {
             var percent = (float)i / _colliderRes;
 
-            if (percent >= _currentProgres)
-            {
-                break;
-            }
-
-
             var pos = _splineToFollow.EvaluatePosition(percent);
             pos = transform.InverseTransformPoint(pos);
 
-            points.Add(new Vector2(pos.x, pos.y));
+            _colliderPoints.Add((new Vector2(pos.x, pos.y), percent));
         }
-
-        _edgeCollider.points = points.ToArray();
     }
 
     private void SegmentSpline()
