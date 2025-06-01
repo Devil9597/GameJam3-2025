@@ -4,19 +4,31 @@ using UnityEngine;
 using UnityEngine.Events;
 using Utilities.Serializables;
 
+/// <summary>
+/// Objects with this script attached are <see cref="Respawnable"/> and can be moved any of the specified positions by calling the <see cref="Respawn(int)"/> method.
+/// </summary>
 public sealed class Respawnable : MonoBehaviour
 {
+	[Tooltip("Will this object be respawned when the game starts?")]
 	[SerializeField] private bool _respawnOnStart = true;
-	[SerializeField] private Transform[] _spawnPoints = new Transform[1];
-	[SerializeField] private UnityEvent _onRespawn;
+	[Tooltip("List of spawn points this object can be respawned at.")]
+	[SerializeField] private List<Transform> _spawnPoints = new(1);
+	[Tooltip("Event is invoked just before respawning.")]
+	[SerializeField] private UnityEvent<int> _onRespawn;
 
 #if UNITY_EDITOR
 	[Header("Debug Settings")]
-	[SerializeField] private RespawnableHelpers.ShowGizmoMode _showConnections = RespawnableHelpers.ShowGizmoMode.Always;
 	[SerializeField] private Color _gizmoColor = Color.white;
+	[SerializeField] private RespawnableHelpers.ShowGizmoMode _showConnections = RespawnableHelpers.ShowGizmoMode.Selected;
 #endif
 
-	public event UnityAction OnRespawn {
+	/// <summary>
+	/// Event is invoked just before moving to a spawn point.
+	/// </summary>
+	/// <remarks>
+	/// The first parameter is the spawn point index.
+	/// </remarks>
+	public event UnityAction<int> OnRespawn {
 		add => _onRespawn.AddListener(value);
 		remove => _onRespawn.RemoveListener(value);
 	}
@@ -29,11 +41,20 @@ public sealed class Respawnable : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// Creates a list of all positions in the spawn points list.
+	/// </summary>
+	/// <returns></returns>
 	public IReadOnlyList<Vector2> GetSpawnPositions()
 	{
 		return _spawnPoints.Select(sp => (Vector2)sp.position).ToArray();
 	}
 
+	/// <summary>
+	/// Sets the position of the spawn point at the given <paramref name="index"/>.
+	/// </summary>
+	/// <param name="spawnPosition"></param>
+	/// <param name="index"></param>
 	public void SetSpawnPosition(Vector2 spawnPosition, int index = 0)
 	{
 		if (!this.HasSpawnPoint(index)) return;
@@ -41,11 +62,15 @@ public sealed class Respawnable : MonoBehaviour
 		_spawnPoints[index].position = spawnPosition;
 	}
 
+	/// <summary>
+	/// Moves this object's transform to the spawn point at the given <paramref name="index"/>.
+	/// </summary>
+	/// <param name="index"></param>
 	public void Respawn(int index = 0)
 	{
 		if (!this.HasSpawnPoint(index)) return;
 
-		_onRespawn?.Invoke();
+		_onRespawn?.Invoke(index);
 		transform.position = _spawnPoints[index].position;
 	}
 
@@ -80,7 +105,7 @@ public sealed class Respawnable : MonoBehaviour
 	{
 		Gizmos.color = _gizmoColor;
 
-		for (int i = 0; i < _spawnPoints.Length; i++)
+		for (int i = 0; i < _spawnPoints.Count; i++)
 		{
 			if (_spawnPoints[i] != null)
 			{
