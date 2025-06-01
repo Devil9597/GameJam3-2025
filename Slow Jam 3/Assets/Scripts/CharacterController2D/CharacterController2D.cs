@@ -294,8 +294,10 @@ public class CharacterController2D : MonoBehaviour
                     // if (dot > 0)
                     {
                         velocity = (velocity - hit.normal * dot).normalized * velocity.magnitude;
+                        velocity = Vector2.ClampMagnitude(velocity, _maxClimbSpeed);
 
                         Debug.DrawLine(transform.position, transform.position + (Vector3)velocity, Color.red);
+                        Debug.Log(velocity);
                     }
                 }
             }
