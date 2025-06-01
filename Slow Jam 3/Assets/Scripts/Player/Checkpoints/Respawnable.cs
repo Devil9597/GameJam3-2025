@@ -12,7 +12,7 @@ public sealed class Respawnable : MonoBehaviour, IRespawnable
 	[Tooltip("Will this object be respawned when the game starts?")]
 	[SerializeField] private bool _respawnOnStart = true;
 	[Tooltip("List of spawn points this object can be respawned at.")]
-	[SerializeField] private List<Transform> _spawnPoints = new(1);
+	[SerializeField] private Transform[] _spawnPoints = new Transform[1];
 	[Tooltip("Event is invoked just before respawning.")]
 	[SerializeField] private UnityEvent<int> _onRespawn;
 
@@ -102,7 +102,7 @@ public sealed class Respawnable : MonoBehaviour, IRespawnable
 	{
 		Gizmos.color = _gizmoColor;
 
-		for (int i = 0; i < _spawnPoints.Count; i++)
+		for (int i = 0; i < _spawnPoints.Length; i++)
 		{
 			if (_spawnPoints[i] != null)
 			{

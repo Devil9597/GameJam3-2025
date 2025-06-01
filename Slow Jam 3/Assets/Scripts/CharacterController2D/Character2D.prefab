@@ -4904,9 +4904,10 @@ GameObject:
   - component: {fileID: 2667653423148057976}
   - component: {fileID: 5952413492929098141}
   - component: {fileID: 6055646200478488158}
+  - component: {fileID: 4469900933337329692}
   m_Layer: 6
   m_Name: Character2D
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5069,6 +5070,8 @@ MonoBehaviour:
   _jumpHeight: 5
   _dashSpeed: 10
   _useGravity: 1
+  _climbAccel: 50
+  _maxClimbSpeed: 5
   _dashTime: 0.25
   _totalDashes: 1
   _gravity: -20
@@ -5081,6 +5084,28 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 63
   _groundContactCount: 0
+  _showDebugLines: 0
+  _isClimbing: 0
+--- !u!114 &4469900933337329692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7424381991047760041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1cb033715451474fb516b71efd91cb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _respawnOnStart: 1
+  _spawnPoints:
+  - {fileID: 0}
+  _onRespawn:
+    m_PersistentCalls:
+      m_Calls: []
+  _gizmoColor: {r: 1, g: 1, b: 1, a: 1}
+  _showConnections: 1
 --- !u!1 &8488861290673477664
 GameObject:
   m_ObjectHideFlags: 0
