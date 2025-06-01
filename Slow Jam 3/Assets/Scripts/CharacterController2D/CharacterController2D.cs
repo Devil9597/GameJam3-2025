@@ -144,6 +144,7 @@ public class CharacterController2D : MonoBehaviour
         _currentDashCount = _totalDashes;
         _currentJumpCount = _extraJumps;
         _useGravity = false;
+        _isGrounded = true;
         _stepsSinceGroundContact = 0;
     }
 
@@ -230,7 +231,8 @@ public class CharacterController2D : MonoBehaviour
                     Debug.DrawLine(contacts[i].point, contacts[i].point + contacts[i].normal, Color.green, 0.5f);
                 }
 
-
+                GroundTouch();
+                _currentJumpCount = _extraJumps;
                 _isGrounded = true;
                 _useGravity = false;
             }
@@ -379,10 +381,5 @@ public class CharacterController2D : MonoBehaviour
         _stepsSinceGroundContact++;
 
         // reset is grounded in on stay/enter?
-    }
-
-    private void OnDrawGizmos()
-    {
-        Handles.Label(transform.position + Vector3.up * 5, $"Ground Contacts:{_groundContactCount}");
     }
 }
