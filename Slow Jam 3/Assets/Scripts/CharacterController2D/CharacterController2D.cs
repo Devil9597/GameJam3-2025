@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class Test : MonoBehaviour
+public class CharacterController2D : MonoBehaviour
 {
     [SerializeField] private PlayerInputHandler _input;
     private Rigidbody2D _rigidbody;

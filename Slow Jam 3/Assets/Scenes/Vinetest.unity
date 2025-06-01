@@ -6289,33 +6289,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 6055646200478488158, guid: 8e4f10f14be5c4445936c3ba2cfc8223, type: 3}
-      propertyPath: _groundAccel
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 6055646200478488158, guid: 8e4f10f14be5c4445936c3ba2cfc8223, type: 3}
-      propertyPath: _maxAirSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6055646200478488158, guid: 8e4f10f14be5c4445936c3ba2cfc8223, type: 3}
-      propertyPath: _groundSnapDistance
-      value: 1.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6055646200478488158, guid: 8e4f10f14be5c4445936c3ba2cfc8223, type: 3}
-      propertyPath: _groundSnapLayerMask.m_Bits
-      value: 63
-      objectReference: {fileID: 0}
-    - target: {fileID: 6691695142394702621, guid: 8e4f10f14be5c4445936c3ba2cfc8223, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 7424381991047760041, guid: 8e4f10f14be5c4445936c3ba2cfc8223, type: 3}
       propertyPath: m_Name
-      value: Test
-      objectReference: {fileID: 0}
-    - target: {fileID: 7424381991047760041, guid: 8e4f10f14be5c4445936c3ba2cfc8223, type: 3}
-      propertyPath: m_Layer
-      value: 6
+      value: Character2D
       objectReference: {fileID: 0}
     - target: {fileID: 8234258445013688160, guid: 8e4f10f14be5c4445936c3ba2cfc8223, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6370,25 +6346,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2945736043797148316, guid: 723ef1cf5ba3e6a41af1de51634fed0b, type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5602494930941733763, guid: 723ef1cf5ba3e6a41af1de51634fed0b, type: 3}
       propertyPath: m_Name
       value: Vine
-      objectReference: {fileID: 0}
-    - target: {fileID: 6192588304290691351, guid: 723ef1cf5ba3e6a41af1de51634fed0b, type: 3}
-      propertyPath: _targetMax
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6192588304290691351, guid: 723ef1cf5ba3e6a41af1de51634fed0b, type: 3}
-      propertyPath: _targetMin
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6192588304290691351, guid: 723ef1cf5ba3e6a41af1de51634fed0b, type: 3}
-      propertyPath: _currentMax
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9071541939627983144, guid: 723ef1cf5ba3e6a41af1de51634fed0b, type: 3}
       propertyPath: m_LocalPosition.x

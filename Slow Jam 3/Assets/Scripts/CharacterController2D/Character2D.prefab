@@ -4905,7 +4905,7 @@ GameObject:
   - component: {fileID: 5952413492929098141}
   - component: {fileID: 6055646200478488158}
   m_Layer: 6
-  m_Name: Test
+  m_Name: Character2D
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
