@@ -45,6 +45,8 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private LayerMask _groundSnapLayerMask;
     [SerializeField] private int _groundContactCount;
 
+    [SerializeField, Header("Debug")] private bool _showDebugLines = false;
+
 
     // TODO: if we need more movement states comeback and do some statey like machine or some component based approach to seperarate
     [SerializeField] private bool _isClimbing = false;
@@ -127,7 +129,6 @@ public class CharacterController2D : MonoBehaviour
             _dashEndTime = Time.time + _dashTime;
 
             _dashDirection = _input.Player.LeftStickDirection.ReadValue<Vector2>();
-            Debug.Log(_dashDirection);
         }
     }
 
@@ -242,7 +243,10 @@ public class CharacterController2D : MonoBehaviour
         var airTarget = movement * _maxAirSpeed;
         var climbTarget = _climbDirection * _maxClimbSpeed;
         Ray ray = new Ray(transform.position, Vector3.down);
-        Debug.DrawLine(ray.origin, ray.origin + ray.direction.normalized * _groundSnapDistance, Color.pink);
+        if (_showDebugLines)
+        {
+            Debug.DrawLine(ray.origin, ray.origin + ray.direction.normalized * _groundSnapDistance, Color.red);
+        }
 
 
         if (Time.time >= _dashEndTime)
@@ -295,9 +299,6 @@ public class CharacterController2D : MonoBehaviour
                     {
                         velocity = (velocity - hit.normal * dot).normalized * velocity.magnitude;
                         velocity = Vector2.ClampMagnitude(velocity, _maxClimbSpeed);
-
-                        Debug.DrawLine(transform.position, transform.position + (Vector3)velocity, Color.red);
-                        Debug.Log(velocity);
                     }
                 }
             }
@@ -312,9 +313,12 @@ public class CharacterController2D : MonoBehaviour
         if (_isClimbing)
         {
             velocity.y = Mathf.MoveTowards(velocity.y, climbTarget, _groundAccel * Time.deltaTime);
-            Debug.Log(velocity.y);
         }
 
+        if (_showDebugLines)
+        {
+            Debug.DrawLine(transform.position, transform.position + (Vector3)velocity, Color.red);
+        }
 
         _rigidbody.linearVelocity = velocity;
 
