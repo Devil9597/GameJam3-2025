@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
@@ -138,8 +139,9 @@ public class CharacterController2D : MonoBehaviour
         _rigidbody.linearVelocity = Vector2.zero;
     }
 
-    private void OnFirstGroundTouch()
+    private void GroundTouch()
     {
+        Debug.Log("first ground touch");
         _currentDashCount = _totalDashes;
         _currentJumpCount = _extraJumps;
         _useGravity = false;
@@ -155,7 +157,8 @@ public class CharacterController2D : MonoBehaviour
     }
 
 
-    private HashSet<Collider2D> _groundContacts = new();
+    // dont do this, it breaks when using a single collider.
+    //private HashSet<Collider2D> _groundContacts = new();
     private HashSet<Vine> _vineContacts = new();
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -163,16 +166,17 @@ public class CharacterController2D : MonoBehaviour
         var vine = other.gameObject.GetComponent<Vine>();
         if (vine is not null)
         {
-            if (_vineContacts.Count == 0)
+            if (_groundContactCount == 0)
             {
                 OnFirstClimb();
             }
 
-            _vineContacts.Add(vine);
+            _groundContactCount++;
             _isClimbing = true;
             _useGravity = false;
         }
     }
+
 
     private void OnTriggerExit2D(Collider2D other)
     {
@@ -200,28 +204,57 @@ public class CharacterController2D : MonoBehaviour
         {
             if (IsNormalGround(contacts[i].normal))
             {
-                if (_groundContacts.Count == 0)
+                // if (_groundContactCount == 0)
                 {
-                    //we just touched the ground 
-                    OnFirstGroundTouch();
+                    GroundTouch();
                 }
 
-                _groundContacts.Add(other.collider);
-                _groundContactCount++;
                 _isGrounded = true;
+            }
+        }
+    }
+
+    private void OnCollisionStay2D(Collision2D other)
+    {
+        var contacts = new ContactPoint2D[10];
+        var count = other.GetContacts(contacts);
+
+        for (int i = 0; i < count; i++)
+        {
+            if (IsNormalGround(contacts[i].normal))
+            {
+                _isGrounded = true;
+                _useGravity = false;
             }
         }
     }
 
     private void OnCollisionExit2D(Collision2D other)
     {
-        _groundContacts.Remove(other.collider);
-        if (_groundContacts.Count == 0)
+        // since we are evaluating on stay setting this to false every exit should be fine?
+        _isGrounded = false;
+        _useGravity = true;
+    }
+
+    /*private void OnCollisionExit2D(Collision2D other)
+    {
+        var contacts = new ContactPoint2D[10];
+        var count = other.GetContacts(contacts);
+
+        for (int i = 0; i < count; i++)
         {
-            _isGrounded = false;
-            _useGravity = true;
+            if (IsNormalGround(contacts[i].normal))
+            {
+                _groundContactCount--;
+                if (_groundContactCount == 0)
+                {
+                    _isGrounded = false;
+                    _useGravity = true;
+                }
+            }
         }
     }
+    */
 
     private bool IsNormalGround(Vector2 normal)
     {
@@ -328,5 +361,10 @@ public class CharacterController2D : MonoBehaviour
         _stepsSinceGroundContact++;
 
         // reset is grounded in on stay/enter?
+    }
+
+    private void OnDrawGizmos()
+    {
+        Handles.Label(transform.position + Vector3.up * 5, $"Ground Contacts:{_groundContactCount}");
     }
 }
