@@ -4900,11 +4900,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8234258445013688160}
+  - component: {fileID: 6055646200478488158}
+  - component: {fileID: 4469900933337329692}
   - component: {fileID: 7045797025369952065}
   - component: {fileID: 2667653423148057976}
   - component: {fileID: 5952413492929098141}
-  - component: {fileID: 6055646200478488158}
-  - component: {fileID: 4469900933337329692}
   m_Layer: 6
   m_Name: Character2D
   m_TagString: Player
@@ -4929,6 +4929,67 @@ Transform:
   - {fileID: 5862084674305756994}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6055646200478488158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7424381991047760041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbbd7899e5d91a64fbde0fcf03b8fb4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _input: {fileID: 11400000, guid: 5d90b0e9678dc7e4fae393a831e52707, type: 2}
+  _maxGroundAngle: 60
+  _groundAccel: 50
+  _airAccel: 100
+  _maxSpeed: 5
+  _maxAirSpeed: 5
+  _extraJumps: 1
+  _jumpHeight: 5
+  _dashSpeed: 10
+  _useGravity: 1
+  _canJump: 1
+  _climbAccel: 50
+  _maxClimbSpeed: 5
+  _dashTime: 0.25
+  _totalDashes: 1
+  _gravity: -20
+  _isDashing: 0
+  _isGrounded: 0
+  keyCount: 0
+  keysText: {fileID: 0}
+  _jumpParticleSystem: {fileID: 669158711741381178}
+  _dashParticleSystem: {fileID: 6483818394685594749}
+  _groundSnapDistance: 1.2
+  _groundSnapLayerMask:
+    serializedVersion: 2
+    m_Bits: 63
+  _groundContactCount: 0
+  _showDebugLines: 0
+  _isClimbing: 0
+--- !u!114 &4469900933337329692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7424381991047760041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1cb033715451474fb516b71efd91cb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _respawnOnStart: 1
+  _spawnPoints:
+  - {fileID: 0}
+  _onRespawn:
+    m_PersistentCalls:
+      m_Calls: []
+  _gizmoColor: {r: 1, g: 1, b: 1, a: 1}
+  _showConnections: 1
 --- !u!50 &7045797025369952065
 Rigidbody2D:
   serializedVersion: 5
@@ -5048,64 +5109,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6055646200478488158
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7424381991047760041}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbbd7899e5d91a64fbde0fcf03b8fb4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _input: {fileID: 11400000, guid: 5d90b0e9678dc7e4fae393a831e52707, type: 2}
-  _maxGroundAngle: 60
-  _groundAccel: 50
-  _airAccel: 100
-  _maxSpeed: 5
-  _maxAirSpeed: 5
-  _extraJumps: 1
-  _jumpHeight: 5
-  _dashSpeed: 10
-  _useGravity: 1
-  _climbAccel: 50
-  _maxClimbSpeed: 5
-  _dashTime: 0.25
-  _totalDashes: 1
-  _gravity: -20
-  _isDashing: 0
-  _isGrounded: 0
-  _jumpParticleSystem: {fileID: 669158711741381178}
-  _dashParticleSystem: {fileID: 6483818394685594749}
-  _groundSnapDistance: 1.2
-  _groundSnapLayerMask:
-    serializedVersion: 2
-    m_Bits: 63
-  _groundContactCount: 0
-  _showDebugLines: 0
-  _isClimbing: 0
---- !u!114 &4469900933337329692
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7424381991047760041}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1cb033715451474fb516b71efd91cb2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _respawnOnStart: 1
-  _spawnPoints:
-  - {fileID: 0}
-  _onRespawn:
-    m_PersistentCalls:
-      m_Calls: []
-  _gizmoColor: {r: 1, g: 1, b: 1, a: 1}
-  _showConnections: 1
 --- !u!1 &8488861290673477664
 GameObject:
   m_ObjectHideFlags: 0
