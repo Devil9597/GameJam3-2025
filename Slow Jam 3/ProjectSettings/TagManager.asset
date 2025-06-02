@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 3
   tags:
   - Vine
+  - Spikes
+  - Falling Spike
+  - Collectible
+  - Key
+  - PowerUp
   layers:
   - Default
   - TransparentFX

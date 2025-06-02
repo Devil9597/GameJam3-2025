@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class CharacterController2D : MonoBehaviour
@@ -17,7 +18,7 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private float _airAccel = 20f;
     [SerializeField] private float _maxSpeed = 5;
     [SerializeField] private float _maxAirSpeed = 2;
-    [SerializeField] private int _extraJumps = 1;
+    [SerializeField] private int _extraJumps = 0;
     [SerializeField] private float _jumpHeight = 10;
     [SerializeField] private float _dashSpeed = 10;
     [SerializeField] private bool _useGravity = true;
@@ -25,6 +26,7 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private float _climbAccel = 50;
     [SerializeField] private float _maxClimbSpeed = 5;
 
+    
 
     /// <summary>
     /// the time to wait before applying gravity again
@@ -37,6 +39,9 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private bool _isDashing;
     [SerializeField] private bool _isGrounded = false;
 
+    [SerializeField, Header("Key UI")] public int keyCount = 0;
+    [SerializeField] Text keysText;
+
     [FormerlySerializedAs("_jumpParticlySystem")] [SerializeField, Header("Visuals")]
     private ParticleSystem _jumpParticleSystem;
 
@@ -47,7 +52,6 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private int _groundContactCount;
 
     [SerializeField, Header("Debug")] private bool _showDebugLines = false;
-
 
     // TODO: if we need more movement states comeback and do some statey like machine or some component based approach to seperarate
     [SerializeField] private bool _isClimbing = false;
@@ -285,6 +289,11 @@ public class CharacterController2D : MonoBehaviour
         }
 
         return false;
+    }
+
+    private void Update()
+    {
+        keysText.text = "Keys: " + $"{keyCount}";
     }
 
     private void FixedUpdate()
