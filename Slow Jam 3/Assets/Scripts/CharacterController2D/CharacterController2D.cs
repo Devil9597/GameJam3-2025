@@ -22,6 +22,7 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private float _jumpHeight = 10;
     [SerializeField] private float _dashSpeed = 10;
     [SerializeField] private bool _useGravity = true;
+    [SerializeField] private bool _canJump = true;
 
     [SerializeField] private float _climbAccel = 50;
     [SerializeField] private float _maxClimbSpeed = 5;
@@ -88,6 +89,11 @@ public class CharacterController2D : MonoBehaviour
 
         void OnJump(InputAction.CallbackContext obj)
         {
+            if (_canJump is false)
+            {
+                return;
+            }
+            
             if (_isGrounded)
             {
                 _useGravity = true;

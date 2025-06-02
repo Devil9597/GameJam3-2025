@@ -89,10 +89,14 @@ public class Vine : MonoBehaviour
         }
     }
 
-    public void SetTarget(float min, float max)
+    public void SetMaxTarget(float max)
+    {
+        _targetMax = max;
+    }
+
+    public void SetMinTarget(float min)
     {
         _targetMin = min;
-        _targetMax = max;
     }
 // be normal and make it an overload when you sober up
 
