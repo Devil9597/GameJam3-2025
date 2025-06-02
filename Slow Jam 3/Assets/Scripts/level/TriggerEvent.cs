@@ -3,27 +3,27 @@ using UnityEngine.Events;
 
 public class TriggerEvent : MonoBehaviour
 {
-	[SerializeField] private string _targetTag = "Player";
-	[SerializeField] private UnityEvent<GameObject> _onEnter;
-	[SerializeField] private UnityEvent<GameObject> _onStay;
-	[SerializeField] private UnityEvent<GameObject> _onExit;
+	[SerializeField] protected string _targetTag = "Player";
+	[SerializeField] protected UnityEvent<GameObject> _onEnter;
+	[SerializeField] protected UnityEvent<GameObject> _onStay;
+	[SerializeField] protected UnityEvent<GameObject> _onExit;
 
-	public event UnityAction<GameObject> OnEnter {
+	public virtual event UnityAction<GameObject> OnEnter {
 		add => _onEnter.AddListener(value);
 		remove => _onEnter.RemoveListener(value);
 	}
 
-	public event UnityAction<GameObject> OnStay {
+	public virtual event UnityAction<GameObject> OnStay {
 		add => _onStay.AddListener(value);
 		remove => _onStay.RemoveListener(value);
 	}
 
-	public event UnityAction<GameObject> OnExit {
+	public virtual event UnityAction<GameObject> OnExit {
 		add => _onExit.AddListener(value);
 		remove => _onExit.RemoveListener(value);
 	}
 
-	private void OnTriggerEnter2D(Collider2D other)
+	protected virtual void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.gameObject.CompareTag(_targetTag))
 		{
@@ -31,7 +31,7 @@ public class TriggerEvent : MonoBehaviour
 		}
 	}
 
-	private void OnTriggerStay2D(Collider2D other)
+	protected virtual void OnTriggerStay2D(Collider2D other)
 	{
 		if (other.gameObject.CompareTag(_targetTag))
 		{
@@ -39,10 +39,9 @@ public class TriggerEvent : MonoBehaviour
 		}
 	}
 
-	private void OnTriggerExit2D(Collider2D other)
+	protected virtual void OnTriggerExit2D(Collider2D other)
 	{
 		if (other.gameObject.CompareTag(_targetTag))
-
 		{
 			_onExit.Invoke(other.gameObject);
 		}

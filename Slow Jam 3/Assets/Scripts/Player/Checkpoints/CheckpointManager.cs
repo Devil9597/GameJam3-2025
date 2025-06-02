@@ -3,7 +3,7 @@ using UnityEngine;
 public class CheckpointManager : Utilities.Singletons.RegulatorSingleton<CheckpointManager>
 {
 	[SerializeField] private Utilities.Serializables.InterfaceReference<IRespawnable> _player;
-	public IRespawnable Player => _player.Value;
+	public static IRespawnable Player => Instance._player.Value;
 
 	protected override void Initialize()
 	{
