@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Player.Checkpoints.Serialization;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -13,21 +14,20 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField] private PlayerInputHandler _input;
     private Rigidbody2D _rigidbody;
 
-    [SerializeField] private float _maxGroundAngle = 60;
-    [SerializeField] private float _groundAccel = 50f;
-    [SerializeField] private float _airAccel = 20f;
-    [SerializeField] private float _maxSpeed = 5;
-    [SerializeField] private float _maxAirSpeed = 2;
-    [SerializeField] private int _extraJumps = 0;
-    [SerializeField] private float _jumpHeight = 10;
-    [SerializeField] private float _dashSpeed = 10;
-    [SerializeField] private bool _useGravity = true;
-    [SerializeField] private bool _canJump = true;
+    [SerializeField, SerializeData] private float _maxGroundAngle = 60;
+    [SerializeField, SerializeData] private float _groundAccel = 50f;
+    [SerializeField, SerializeData] private float _airAccel = 20f;
+    [SerializeField, SerializeData] private float _maxSpeed = 5;
+    [SerializeField, SerializeData] private float _maxAirSpeed = 2;
+    [SerializeField, SerializeData] private int _extraJumps = 0;
+    [SerializeField, SerializeData] private float _jumpHeight = 10;
+    [SerializeField, SerializeData] private float _dashSpeed = 10;
+    [SerializeField, SerializeData] private bool _useGravity = true;
+    [SerializeField, SerializeData] private bool _canJump = true;
 
-    [SerializeField] private float _climbAccel = 50;
-    [SerializeField] private float _maxClimbSpeed = 5;
+    [SerializeField, SerializeData] private float _climbAccel = 50;
+    [SerializeField, SerializeData] private float _maxClimbSpeed = 5;
 
-    
 
     /// <summary>
     /// the time to wait before applying gravity again
@@ -93,7 +93,7 @@ public class CharacterController2D : MonoBehaviour
             {
                 return;
             }
-            
+
             if (_isGrounded)
             {
                 _useGravity = true;
@@ -143,6 +143,11 @@ public class CharacterController2D : MonoBehaviour
         }
     }
 
+
+    public void AddExtraJump()
+    {
+        _extraJumps++;
+    }
 
     private void OnFirstClimb()
     {
