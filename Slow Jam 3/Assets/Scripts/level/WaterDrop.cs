@@ -10,15 +10,14 @@ public class WaterDrop : MonoBehaviour
     [SerializeField] private ParticleSystem _particleSystem;
     [SerializeField] private SpriteRenderer _sprite;
     [SerializeField] private float _destroyTime = 5;
-    [SerializeField] private  Rigidbody2D _rigidbody;
+    [SerializeField] private Rigidbody2D _rigidbody;
+
 
     private bool _isExplode = false;
 
     /// <summary>
     /// theres no reason rn to keep a ref to the containers, just keep a int count of the ones we are touching
     /// </summary>
-    private List<WaterContainer> _containers = new();
-
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Explode()
@@ -39,10 +38,13 @@ public class WaterDrop : MonoBehaviour
     {
     }
 
+    [SerializeField] private int _containerContacts;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         var waterContainer = other.gameObject.GetComponent<WaterContainer>();
+
+
         if (waterContainer is null)
         {
             return;
@@ -51,14 +53,12 @@ public class WaterDrop : MonoBehaviour
         if (waterContainer.TryConsume())
         {
             Explode();
-            
-            
         }
-        _containers.Add(waterContainer);
-        
+
+        _containerContacts++;
     }
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerExit2D(Collider2D other)
     {
         var waterContainer = other.gameObject.GetComponent<WaterContainer>();
         if (waterContainer is null)
@@ -66,9 +66,8 @@ public class WaterDrop : MonoBehaviour
             return;
         }
 
-        _containers.Remove(waterContainer);
-
-        if (_containers.Count is 0)
+        _containerContacts--;
+        if (_containerContacts == 0)
         {
             Explode();
         }
@@ -77,9 +76,23 @@ public class WaterDrop : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D other)
     {
-        if (_containers.Count is 0 && _isExplode is false)
+        if (_containerContacts is 0 && _isExplode is false)
         {
             Explode();
+            return;
+        }
+
+
+        var container = other.gameObject.GetComponent<WaterContainer>();
+        if (container == null)
+        {
+            return;
+        }
+
+        if (container.TryConsume())
+        {
+            Explode();
+            return;
         }
     }
 }

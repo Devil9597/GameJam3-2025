@@ -32,10 +32,13 @@ public class TriggerEvent : MonoBehaviour
         if (other.gameObject.CompareTag(_targetTag))
         {
             _onEnter.Invoke(other.gameObject);
-            var respawn = other.GetComponent<Respawnable>();
-            if (respawn != null)
+            if (_shouldKillPlayer)
             {
-                respawn.Respawn();
+                var respawn = other.GetComponent<Respawnable>();
+                if (respawn != null)
+                {
+                    respawn.Respawn();
+                }
             }
         }
     }
