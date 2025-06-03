@@ -45,9 +45,10 @@ public sealed class Respawnable : MonoBehaviour, IRespawnable
         _checkpointAwareObjects =
             GameObject.FindObjectsByType<SerializeGameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None)
                 .ToList();
-        if (_respawnOnStart)
+
+        foreach (var obj in _checkpointAwareObjects)
         {
-            this.Respawn();
+            obj.SaveState();
         }
     }
 
@@ -79,8 +80,6 @@ public sealed class Respawnable : MonoBehaviour, IRespawnable
     /// <param name="index"></param>
     public void Respawn(int index = 0)
     {
-        if (!this.HasSpawnPoint(index)) return;
-
         foreach (var checkpointAwareObject in _checkpointAwareObjects)
         {
             checkpointAwareObject.LoadState();
