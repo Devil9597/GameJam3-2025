@@ -4,36 +4,50 @@ using UnityEngine.Events;
 
 namespace level
 {
-    public class CollisionEvent : MonoBehaviour
-    {
-        [SerializeField] private string _targetTag = "Player";
-        [SerializeField] private UnityEvent<GameObject> _onEnter;
-        [SerializeField] private UnityEvent<GameObject> _onStay;
-        [SerializeField] private UnityEvent<GameObject> _onExit;
+	public class CollisionEvent : MonoBehaviour
+	{
+		[SerializeField] protected string _targetTag = "Player";
+		[SerializeField] protected UnityEvent<GameObject> _onEnter;
+		[SerializeField] protected UnityEvent<GameObject> _onStay;
+		[SerializeField] protected UnityEvent<GameObject> _onExit;
 
+		public virtual event UnityAction<GameObject> OnEnter {
+			add => _onEnter.AddListener(value);
+			remove => _onEnter.RemoveListener(value);
+		}
 
-        private void OnCollisionEnter2D(Collision2D other)
-        {
-            if (other.gameObject.CompareTag(_targetTag))
-            {
-                _onEnter.Invoke(other.gameObject);
-            }
-        }
+		public virtual event UnityAction<GameObject> OnStay {
+			add => _onStay.AddListener(value);
+			remove => _onStay.RemoveListener(value);
+		}
 
-        private void OnCollisionStay2D(Collision2D other)
-        {
-            if (other.gameObject.CompareTag(_targetTag))
-            {
-                _onStay.Invoke(other.gameObject);
-            }
-        }
+		public virtual event UnityAction<GameObject> OnExit {
+			add => _onExit.AddListener(value);
+			remove => _onExit.RemoveListener(value);
+		}
 
-        private void OnCollisionExit(Collision other)
-        {
-            if (other.gameObject.CompareTag(_targetTag))
-            {
-                _onExit.Invoke(other.gameObject);
-            }
-        }
-    }
+		protected virtual void OnCollisionEnter2D(Collision2D other)
+		{
+			if (other.gameObject.CompareTag(_targetTag))
+			{
+				_onEnter.Invoke(other.gameObject);
+			}
+		}
+
+		protected virtual void OnCollisionStay2D(Collision2D other)
+		{
+			if (other.gameObject.CompareTag(_targetTag))
+			{
+				_onStay.Invoke(other.gameObject);
+			}
+		}
+
+		protected virtual void OnCollisionExit(Collision other)
+		{
+			if (other.gameObject.CompareTag(_targetTag))
+			{
+				_onExit.Invoke(other.gameObject);
+			}
+		}
+	}
 }

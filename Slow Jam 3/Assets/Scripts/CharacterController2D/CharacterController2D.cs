@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Player;
 using Player.Checkpoints.Serialization;
 using UnityEditor;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.InputSystem;
@@ -69,6 +71,7 @@ public class CharacterController2D : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+
         Assert.AreEqual(gameObject.layer, LayerMask.NameToLayer("Player"));
 
         _rigidbody = GetComponent<Rigidbody2D>();

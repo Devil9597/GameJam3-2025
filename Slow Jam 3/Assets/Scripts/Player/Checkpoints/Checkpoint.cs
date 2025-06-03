@@ -7,6 +7,6 @@ public class Checkpoint : MonoBehaviour
 
 	public void SetAsPlayerSpawnPoint()
 	{
-		CheckpointManager.Instance.Player.SetSpawnPosition(transform.position, _targetIndex);
+		CheckpointManager.Player.SetSpawnPosition(transform.position, _targetIndex);
 	}
 }
