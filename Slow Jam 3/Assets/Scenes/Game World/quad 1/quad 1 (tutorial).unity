@@ -2589,11 +2589,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8234258445013688160, guid: 8e4f10f14be5c4445936c3ba2cfc8223, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 163.71
+      value: 55.75
       objectReference: {fileID: 0}
     - target: {fileID: 8234258445013688160, guid: 8e4f10f14be5c4445936c3ba2cfc8223, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -80.78
+      value: -75.75
       objectReference: {fileID: 0}
     - target: {fileID: 8234258445013688160, guid: 8e4f10f14be5c4445936c3ba2cfc8223, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4025,7 +4025,7 @@ TilemapCollider2D:
   m_Offset: {x: 0, y: 0}
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0
-  m_UseDelaunayMesh: 0
+  m_UseDelaunayMesh: 1
 --- !u!483693784 &1561728096
 TilemapRenderer:
   m_ObjectHideFlags: 0
