@@ -10,136 +10,64 @@ using Utilities.Serializables;
 /// </summary>
 public sealed class Respawnable : MonoBehaviour, IRespawnable
 {
-    [Tooltip("Will this object be respawned when the game starts?")] [SerializeField]
-    private bool _respawnOnStart = true;
+	[Tooltip("Event is invoked just before respawning.")]
+	[SerializeField]
+	private UnityEvent _onRespawn;
+	[SerializeField] private List<SerializeGameObject> _managedObjects = new();
 
-    [Tooltip("List of spawn points this object can be respawned at.")] [SerializeField]
-    private Transform[] _spawnPoints = new Transform[1];
+	/// <summary>
+	/// Event is invoked just before moving to a spawn point.
+	/// </summary>
+	/// <remarks>
+	/// The first parameter is the spawn point index.
+	/// </remarks>
+	public event UnityAction OnRespawn {
+		add => _onRespawn.AddListener(value);
+		remove => _onRespawn.RemoveListener(value);
+	}
 
-    [Tooltip("Event is invoked just before respawning.")] [SerializeField]
-    private UnityEvent<int> _onRespawn;
+	private void Start()
+	{
+		_managedObjects =
+			GameObject.FindObjectsByType<SerializeGameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+				.ToList();
 
-    [Header("Debug Settings")] [SerializeField]
-    private Color _gizmoColor = Color.white;
+		foreach (var obj in _managedObjects)
+		{
+			obj.SaveState();
+		}
+	}
 
-    [SerializeField]
-    private RespawnableHelpers.ShowGizmoMode _showConnections = RespawnableHelpers.ShowGizmoMode.Selected;
+	public void SaveState()
+	{
+		foreach (var checkpointAwareObject in _managedObjects)
+		{
+			checkpointAwareObject.SaveState();
+		}
+	}
 
-    /// <summary>
-    /// Event is invoked just before moving to a spawn point.
-    /// </summary>
-    /// <remarks>
-    /// The first parameter is the spawn point index.
-    /// </remarks>
-    public event UnityAction<int> OnRespawn
-    {
-        add => _onRespawn.AddListener(value);
-        remove => _onRespawn.RemoveListener(value);
-    }
+	public void Respawn()
+	{
+		_onRespawn?.Invoke();
 
-    [SerializeField] private List<SerializeGameObject> _checkpointAwareObjects = new();
-
-
-    private void Start()
-    {
-        _checkpointAwareObjects =
-            GameObject.FindObjectsByType<SerializeGameObject>(FindObjectsInactive.Include, FindObjectsSortMode.None)
-                .ToList();
-
-        foreach (var obj in _checkpointAwareObjects)
-        {
-            obj.SaveState();
-        }
-    }
-
-    /// <summary>
-    /// Creates a list of all positions in the spawn points list.
-    /// </summary>
-    /// <returns></returns>
-    public IReadOnlyList<Vector2> GetSpawnPositions()
-    {
-        return _spawnPoints.Select(sp => (Vector2)sp.position).ToArray();
-    }
-
-    /// <summary>
-    /// Sets the position of the spawn point at the given <paramref name="index"/>.
-    /// </summary>
-    /// <param name="spawnPosition"></param>
-    /// <param name="index"></param>
-    public void SetSpawnPosition(Vector2 spawnPosition, int index = 0)
-    {
-        foreach (var checkpointAwareObject in _checkpointAwareObjects)
-        {
-            checkpointAwareObject.SaveState();
-        }
-    }
-
-    /// <summary>
-    /// Moves this object's transform to the spawn point at the given <paramref name="index"/>.
-    /// </summary>
-    /// <param name="index"></param>
-    public void Respawn(int index = 0)
-    {
-        foreach (var checkpointAwareObject in _checkpointAwareObjects)
-        {
-            checkpointAwareObject.LoadState();
-        }
-
-        _onRespawn?.Invoke(index);
-    }
-
-    private bool HasSpawnPoint(int index = 0)
-    {
-        var hasSpawnPoint = _spawnPoints.ContainsIndex(index) && (bool)_spawnPoints[index];
-        if (!hasSpawnPoint)
-        {
-            Debug.LogError($"The object {name} has no spawn point at index {index}.");
-        }
-
-        return hasSpawnPoint;
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (_showConnections is not RespawnableHelpers.ShowGizmoMode.Always)
-            return;
-
-        DrawConnections();
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        if (_showConnections is not RespawnableHelpers.ShowGizmoMode.Selected)
-            return;
-
-        DrawConnections();
-    }
-
-    private void DrawConnections()
-    {
-        Gizmos.color = _gizmoColor;
-
-        for (int i = 0; i < _spawnPoints.Length; i++)
-        {
-            if (_spawnPoints[i] != null)
-            {
-                Gizmos.DrawLine(transform.position, _spawnPoints[i].position);
-            }
-        }
-    }
+		foreach (var checkpointAwareObject in _managedObjects)
+		{
+			checkpointAwareObject.LoadState();
+		}
+	}
 }
 
 public static class RespawnableHelpers
 {
-    public enum ShowGizmoMode
-    {
-        Hidden,
-        Selected,
-        Always
-    }
+	public enum ShowGizmoMode
+	{
+		Hidden,
+		Selected,
+		Always
+	}
 
-    public static bool ContainsIndex<T>(this IList<T> array, int index)
-    {
-        return array is not null && (0, array.Count).Contains(index, RangeInclusivity.Min);
-    }
+	public static bool ContainsIndex<T>(this IList<T> array, int index)
+	{
+		return array is not null && (0, array.Count).Contains(index, RangeInclusivity.Min);
+	}
 }
