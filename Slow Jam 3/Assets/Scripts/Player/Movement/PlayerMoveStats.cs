@@ -4,6 +4,7 @@ using UnityEngine;
 using Utilities.Timers;
 
 [CreateAssetMenu(fileName = "PlayerMoveStats", menuName = "Scriptable Objects/PlayerMoveStats")]
+[Obsolete("Movement System has been reworked.")]
 public class PlayerMoveStats : ScriptableObject
 {
     [Header("Horizontal Movement")] [SerializeField]
