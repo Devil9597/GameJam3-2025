@@ -26,9 +26,11 @@ public class CharacterController2D : MonoBehaviour
     [SerializeField, SerializeData] private float _dashSpeed = 10;
     [SerializeField, SerializeData] private bool _useGravity = true;
     [SerializeField, SerializeData] private bool _canJump = true;
+    [SerializeField, SerializeData] private bool _canHover = true;
 
     [SerializeField, SerializeData] private float _climbAccel = 50;
     [SerializeField, SerializeData] private float _maxClimbSpeed = 5;
+    [SerializeField, SerializeData] private float _hoverSlowdown = 0.4f;
 
 
     /// <summary>
@@ -390,6 +392,15 @@ public class CharacterController2D : MonoBehaviour
         if (_isClimbing)
         {
             velocity.y = Mathf.MoveTowards(velocity.y, climbTarget, _groundAccel * Time.deltaTime);
+        }
+
+        if (_canHover && _isGrounded is false)
+        {
+            // hover by holding jump after a jump
+            if (_input.Player.Jump.IsPressed())
+            {
+                
+            }
         }
 
         if (_showDebugLines)

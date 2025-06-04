@@ -4,9 +4,8 @@ using UnityEngine.Events;
 
 public interface IRespawnable
 {
-	event UnityAction<int> OnRespawn;
+	event UnityAction OnRespawn;
 
-	IReadOnlyList<Vector2> GetSpawnPositions();
-	void Respawn(int index = 0);
-	void SetSpawnPosition(Vector2 spawnPosition, int index = 0);
+	void Respawn();
+	void SaveState();
 }
