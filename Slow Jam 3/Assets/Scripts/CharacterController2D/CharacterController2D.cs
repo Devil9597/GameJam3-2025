@@ -71,7 +71,6 @@ public class CharacterController2D : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
         Assert.AreEqual(gameObject.layer, LayerMask.NameToLayer("Player"));
 
         _rigidbody = GetComponent<Rigidbody2D>();
@@ -307,7 +306,10 @@ public class CharacterController2D : MonoBehaviour
 
     private void Update()
     {
-        keysText.text = "Keys: " + $"{keyCount}";
+        if (keysText != null)
+        {
+            keysText.text = "Keys: " + $"{keyCount}";
+        }
     }
 
     private void FixedUpdate()
