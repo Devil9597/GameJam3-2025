@@ -17,7 +17,13 @@ public class PowerUp : TriggerEvent
 	}
 
 	public Abilities abilitiesUnlocked;
-	public CharacterController2D player;
+	private static CharacterController2D[] _players;
+
+	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+	private static void Init()
+	{
+		_players = FindObjectsByType<CharacterController2D>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+	}
 
 	public void Start()
 	{
@@ -44,6 +50,10 @@ public class PowerUp : TriggerEvent
 	{
 		if (abilitiesUnlocked is Abilities.None)
 			return;
-		player.EnableAbilities(abilitiesUnlocked);
+
+		foreach (var player in _players)
+		{
+			player.EnableAbilities(abilitiesUnlocked);
+		}
 	}
 }
