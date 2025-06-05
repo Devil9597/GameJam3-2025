@@ -1,17 +1,49 @@
+using System;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class PowerUp : MonoBehaviour
+public class PowerUp : TriggerEvent
 {
-    [SerializeField] CharacterController2D CharacterController;
-    [SerializeField] GameObject powerUp;
+	[Flags]
+	public enum Abilities
+	{
+		All = -1,
+		None = 0,
+		Jump = 1,
+		DoubleJump = Jump | 2,
+		Grab = 4,
+		Climb = 8,
+		Dash = 16,
+		Hover = 32,
+	}
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.tag == "Player")
-        {
-            powerUp.SetActive(false);
-            CharacterController.keyCount++;
-        }
-    }
+	public Abilities abilitiesUnlocked;
+	public CharacterController2D player;
+
+	public void Start()
+	{
+		this.OnEnter += this.PowerUp_OnEnter;
+	}
+
+	public void OnDestroy()
+	{
+		this.OnEnter -= this.PowerUp_OnEnter;
+	}
+
+	private void PowerUp_OnEnter(GameObject arg0)
+	{
+		UnlockAbilities();
+		Deactivate();
+	}
+
+	public void Deactivate()
+	{
+		gameObject.SetActive(false);
+	}
+
+	public void UnlockAbilities()
+	{
+		if (abilitiesUnlocked.HasFlag(Abilities.None))
+			return;
+		player.EnableAbilities(abilitiesUnlocked);
+	}
 }
