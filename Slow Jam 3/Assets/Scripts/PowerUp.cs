@@ -42,7 +42,7 @@ public class PowerUp : TriggerEvent
 
 	public void UnlockAbilities()
 	{
-		if (abilitiesUnlocked.HasFlag(Abilities.None))
+		if (abilitiesUnlocked is Abilities.None)
 			return;
 		player.EnableAbilities(abilitiesUnlocked);
 	}
