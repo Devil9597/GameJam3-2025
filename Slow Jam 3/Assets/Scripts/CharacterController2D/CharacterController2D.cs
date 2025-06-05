@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -33,6 +34,20 @@ public class CharacterController2D : MonoBehaviour
 
     [SerializeField, SerializeData] private float _maxGlideTime = 1f;
     [SerializeField, SerializeData] private float _glideSlowdown = 0.4f;
+
+    [SerializeField] private bool _isHovering;
+    // bool is start/stop
+
+    [SerializeField] private UnityEvent _onJump;
+    [SerializeField] private UnityEvent _onHover;
+    [SerializeField] private UnityEvent _onDash;
+    [SerializeField] private UnityEvent _onClimb;
+    [SerializeField] private UnityEvent _onGroundTouch;
+    [SerializeField] private UnityEvent _startWalkSound;
+    [SerializeField] private UnityEvent _stopWalkSound;
+
+    [SerializeField] private UnityEvent _endClimb;
+    [SerializeField] private UnityEvent _endHover;
 
 
     /// <summary>
@@ -72,7 +87,9 @@ public class CharacterController2D : MonoBehaviour
     private int _currentJumpCount;
     private float _dashEndTime;
     private int _stepsSinceLastJump;
-    private int _stepsSinceGroundContact;
+    [SerializeField] private int _stepsSinceGroundContact;
+
+    private bool _firstHover = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -104,9 +121,10 @@ public class CharacterController2D : MonoBehaviour
 
             if (_isGrounded)
             {
+                _onJump.Invoke();
                 _useGravity = true;
                 _targetJump = _jumpHeight;
-                
+
                 //glide only resets on ground based jumps
                 _glideTime = 0;
                 if (_jumpParticleSystem != null)
@@ -117,6 +135,7 @@ public class CharacterController2D : MonoBehaviour
 
             if (_activeAbilities.HasFlag(Abilities.DoubleJump) && _isGrounded is false && _currentJumpCount > 0)
             {
+                _onJump.Invoke();
                 _useGravity = true;
                 if (_jumpParticleSystem != null)
                 {
@@ -140,6 +159,7 @@ public class CharacterController2D : MonoBehaviour
                 return;
             }
 
+            _onDash.Invoke();
             _currentDashCount--;
 
             if (_dashParticleSystem != null)
@@ -147,6 +167,7 @@ public class CharacterController2D : MonoBehaviour
                 _dashParticleSystem.Play();
             }
 
+            _onDash.Invoke();
             _isDashing = true;
             _dashEndTime = Time.time + _dashTime;
 
@@ -171,7 +192,6 @@ public class CharacterController2D : MonoBehaviour
         _currentJumpCount = _extraJumps;
         _useGravity = false;
         _isGrounded = true;
-        _stepsSinceGroundContact = 0;
     }
 
     private void OnDashEnd()
@@ -234,6 +254,7 @@ public class CharacterController2D : MonoBehaviour
                 {
                     GroundTouch();
                 }
+
 
                 _isGrounded = true;
             }
@@ -333,6 +354,8 @@ public class CharacterController2D : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // all of the state if checks are so bad, but i dont have time to make it "right"
+
         var movement = _input.Player.Move.ReadValue<float>();
         var velocity = _rigidbody.linearVelocity;
         var groundTarget = movement * _maxSpeed;
@@ -418,10 +441,33 @@ public class CharacterController2D : MonoBehaviour
             {
                 if (float.IsNegative(velocity.y))
                 {
+                    _isHovering = true;
+
                     velocity.y *= _glideSlowdown;
                     _glideTime += Time.deltaTime;
                 }
             }
+            else
+            {
+                _isHovering = false;
+            }
+        }
+        else
+        {
+            _isHovering = false;
+        }
+
+        if (_isHovering && _firstHover)
+        {
+            Debug.Log("first hover");
+            _onHover.Invoke();
+            _firstHover = false;
+        }
+
+        if (_isHovering is false)
+        {
+            _firstHover = true;
+            _endHover.Invoke();
         }
 
 
@@ -430,6 +476,19 @@ public class CharacterController2D : MonoBehaviour
             Debug.DrawLine(transform.position, transform.position + (Vector3)velocity, Color.red);
         }
 
+        if (_isGrounded && Mathf.Abs(velocity.x) > 1)
+        {
+            _startWalkSound.Invoke();
+        }
+        else
+        {
+            _stopWalkSound.Invoke();
+        }
+
+        if (_isGrounded)
+        {
+            _stepsSinceGroundContact = 0;
+        }
 
         _rigidbody.linearVelocity = velocity;
 
