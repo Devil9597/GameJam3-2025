@@ -329,7 +329,7 @@ public class CharacterController2D : MonoBehaviour
 
     public void DisableAbilities(Abilities abilityFlags)
     {
-        _activeAbilities ^= abilityFlags;
+        _activeAbilities &= ~abilityFlags;
     }
 
     private bool IsNormalGround(Vector2 normal)
